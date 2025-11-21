@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>运维管理系统 - 个人作品集</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .project-detail-banner {
+            background-color: #2c3e50;
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+        .project-detail-banner h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        .project-detail-banner p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        .project-category {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        .project-date {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        .project-detail-section {
+            padding: 80px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .project-detail-section:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 40px;
+            color: #2c3e50;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background-color: #3498db;
+        }
+        .project-overview-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        .overview-item {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+        .overview-item h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        .role-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .role-list li {
+            padding-left: 25px;
+            position: relative;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        .role-list li::before {
+            content: '•';
+            color: #3498db;
+            font-size: 1.2em;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        .challenges-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        .challenge-item {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+        .challenge-item h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        .solution {
+            background-color: #e8f4f8;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .solution h5 {
+            color: #2980b9;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        .achievements-content {
+            text-align: center;
+        }
+        .achievement-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .stat-item {
+            background-color: white;
+            padding: 30px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stat-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+        .stat-label {
+            font-size: 1rem;
+            color: #7f8c8d;
+        }
+        .achievement-list {
+            text-align: left;
+            list-style-type: none;
+            padding: 0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .achievement-list li {
+            padding-left: 25px;
+            position: relative;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        .achievement-list li::before {
+            content: '✓';
+            color: #2ecc71;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        .gallery {
+            text-align: center;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .gallery-item {
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+        .technology-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .tech-tag {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        .tech-tag:hover {
+            background-color: #3498db;
+            color: white;
+        }
+        .methodology {
+            background-color: #ecf0f1;
+            padding: 25px;
+            border-radius: 10px;
+        }
+        .reflection-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        .reflection-point {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+        .reflection-point h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        .related-projects {
+            padding: 80px 0;
+            text-align: center;
+        }
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        .related-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .related-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+        .related-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+        .related-card-info {
+            padding: 20px;
+            text-align: left;
+        }
+        .related-card-title {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .related-card-category {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        .back-button {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 30px;
+            transition: background-color 0.3s ease;
+        }
+        .back-button:hover {
+            background-color: #2980b9;
+        }
+        @media (max-width: 768px) {
+            .project-detail-banner h1 {
+                font-size: 2.2rem;
+            }
+            .section-title {
+                font-size: 1.8rem;
+            }
+            .achievement-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 480px) {
+            .project-detail-banner {
+                padding: 60px 0;
+            }
+            .project-detail-banner h1 {
+                font-size: 1.8rem;
+            }
+            .project-detail-section {
+                padding: 60px 0;
+            }
+            .section-title {
+                font-size: 1.6rem;
+            }
+            .achievement-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 固定导航栏 -->
+    <nav class="navbar fixed-top">
+        <div class="container">
+            <div class="navbar-brand">
+                <a href="index.html">个人作品集</a>
+            </div>
+            <div class="navbar-menu">
+                <ul>
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="about.html">关于</a></li>
+                    <li><a href="portfolio.html">作品集</a></li>
+                </ul>
+            </div>
+            <div class="navbar-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+    
+
+    <!-- 项目详情页头部 -->
+    <section class="project-detail-banner">
+        <div class="container">
+            <span class="project-category">企业管理系统</span>
+            <h1>运维管理系统</h1>
+            <p>为企业提供全面的IT基础设施监控和管理解决方案</p>
+            <div class="project-date">项目周期：2023年3月 - 2023年8月</div>
+        </div>
+    </section>
+
+    <!-- 项目概述 -->
+    <section class="project-detail-section">
+        <div class="container">
+            <h2 class="section-title">项目概述</h2>
+            <div class="project-overview-content">
+                <div class="overview-item">
+                    <h3>项目背景</h3>
+                    <p>随着企业IT基础设施规模的不断扩大，传统的运维方式已无法满足企业需求。我们受客户委托，开发一套全面的运维管理系统，实现对服务器、网络设备、应用服务等IT资源的统一监控、管理和自动化运维。</p>
+                </div>
+                <div class="overview-item">
+                    <h3>项目目标</h3>
+                    <ul class="role-list">
+                        <li>构建全面的IT资源监控平台，实时监控服务器、网络设备状态</li>
+                        <li>实现自动化运维，包括自动告警、自动修复和自动部署</li>
+                        <li>提供可视化仪表盘，直观展示系统运行状态和性能指标</li>
+                        <li>建立完善的知识库和工单系统，提高运维团队工作效率</li>
+                        <li>支持多租户架构，满足不同部门或子公司的独立管理需求</li>
+                    </ul>
+                </div>
+                <div class="overview-item">
+                    <h3>项目时间线</h3>
+                    <p><strong>需求分析阶段（2023年3月 - 4月）：</strong>深入了解客户业务需求，制定详细的功能规格说明书。</p>
+                    <p><strong>设计阶段（2023年4月 - 5月）：</strong>完成系统架构设计、数据库设计和UI/UX设计。</p>
+                    <p><strong>开发阶段（2023年5月 - 7月）：</strong>实现核心功能模块，包括监控系统、自动化运维、仪表盘等。</p>
+                    <p><strong>测试与优化阶段（2023年7月 - 8月）：</strong>进行系统测试、性能优化和用户培训。</p>
+                    <p><strong>上线阶段（2023年8月）：</strong>系统正式上线运行。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 我的角色与职责 -->
+    <section class="project-detail-section">
+        <div class="container">
+            <h2 class="section-title">我的角色与职责</h2>
+            <div class="role-content">
+                <div class="role-item">
+                    <h3>前端架构师</h3>
+                    <ul class="role-list">
+                        <li>负责前端技术选型和架构设计，选择React作为主要前端框架</li>
+                        <li>设计并实现前端组件库，确保UI一致性和开发效率</li>
+                        <li>优化前端性能，特别是大数据量下的渲染性能</li>
+                        <li>制定前端开发规范和工作流程</li>
+                    </ul>
+                </div>
+                <div class="role-item">
+                    <h3>核心开发者</h3>
+                    <ul class="role-list">
+                        <li>实现关键功能模块，包括监控仪表盘、设备管理和告警系统</li>
+                        <li>开发数据可视化组件，使用ECharts实现各类图表展示</li>
+                        <li>设计并实现响应式界面，确保在不同设备上的良好体验</li>
+                        <li>与后端团队协作，完成前后端接口对接</li>
+                    </ul>
+                </div>
+                <div class="role-item">
+                    <h3>团队协作</h3>
+                    <ul class="role-list">
+                        <li>与产品经理密切合作，确保产品功能符合用户需求</li>
+                        <li>指导和培训初级前端开发人员</li>
+                        <li>参与代码评审，确保代码质量</li>
+                        <li>负责前端技术文档编写</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 项目挑战与解决方案 -->
+    <section class="project-detail-section">
+        <div class="container">
+            <h2 class="section-title">项目挑战与解决方案</h2>
+            <div class="challenges-content">
+                <div class="challenge-item">
+                    <h4>挑战1：大数据量实时监控</h4>
+                    <p>系统需要同时监控数百台服务器和网络设备，每秒钟产生大量的监控数据，如何高效处理和展示这些数据是一个挑战。</p>
+                    <div class="solution">
+                        <h5>解决方案</h5>
+                        <p>采用WebSocket技术实现实时数据推送，减少HTTP请求次数。使用React虚拟列表技术处理大量数据的展示，只渲染可视区域内的DOM元素。实现数据采样和聚合功能，对于历史数据，根据时间范围动态调整采样频率。优化ECharts图表的渲染性能，避免不必要的重绘。</p>
+                    </div>
+                </div>
+                <div class="challenge-item">
+                    <h4>挑战2：复杂的权限管理</h4>
+                    <p>作为企业级系统，需要支持多租户架构和细粒度的权限控制，确保不同部门和角色的用户只能访问其授权的资源。</p>
+                    <div class="solution">
+                        <h5>解决方案</h5>
+                        <p>实现基于RBAC（基于角色的访问控制）的权限管理系统，支持自定义角色和权限。使用React Context API结合高阶组件(HOC)实现权限控制逻辑，对敏感操作和数据访问进行权限验证。设计权限管理界面，方便管理员配置用户权限。实现操作日志记录，追踪用户的关键操作。</p>
+                    </div>
+                </div>
+                <div class="challenge-item">
+                    <h4>挑战3：复杂的自动化运维工作流</h4>
+                    <p>自动化运维模块需要支持复杂的工作流配置，包括条件判断、循环和异常处理等，使用户能够灵活定义自动化任务。</p>
+                    <div class="solution">
+                        <h5>解决方案</h5>
+                        <p>设计基于JSON Schema的工作流配置引擎，支持图形化工作流设计器。实现工作流执行引擎，支持异步执行和任务调度。使用状态机模式管理工作流状态，确保工作流执行的可靠性。设计工作流模板系统，提供常用的自动化任务模板，方便用户快速配置。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 关键成果与数据指标 -->
+    <section class="project-detail-section">
+        <div class="container">
+            <h2 class="section-title">关键成果与数据指标</h2>
+            <div class="achievements-content">
+                <div class="achievement-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">95%</div>
+                        <div class="stat-label">运维效率提升</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">70%</div>
+                        <div class="stat-label">故障响应时间缩短</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">85%</div>
+                        <div class="stat-label">自动化任务覆盖率</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">99.9%</div>
+                        <div class="stat-label">系统可用性</div>
+                    </div>
+                </div>
+                <h3>项目成果</h3>
+                <ul class="achievement-list">
+                    <li>成功实现对超过300台服务器和网络设备的统一监控和管理</li>
+                    <li>自动化运维模块覆盖了85%的日常运维工作，显著提高了工作效率</li>
+                    <li>故障检测和响应时间从平均45分钟缩短至15分钟以内</li>
+                    <li>系统运行稳定，可用性达到99.9%以上</li>
+                    <li>用户满意度调查显示，95%的运维人员认为系统极大地提升了他们的工作效率</li>
+                    <li>系统获得了客户技术团队的高度评价，成为其IT运维的核心平台</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 项目图片/原型展示区 -->
+    <section class="project-detail-section">
+        <div class="container">
+            <h2 class="section-title">项目展示</h2>
+            <div class="gallery">
+                <p>以下是项目的主要界面和功能展示：</p>
+                <div class="gallery-grid">
+                    <div class="gallery-item">
+                        <img src="assets/images/project2_1.png" alt="系统监控仪表盘" onerror="this.src='https://via.placeholder.com/600x400?text=System+Dashboard'; this.onerror=null;">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="assets/images/project2_2.png" alt="设备管理界面" onerror="this.src='https://via.placeholder.com/600x400?text=Device+Management'; this.onerror=null;">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="assets/images/project2_3.png" alt="告警管理界面" onerror="this.src='https://via.placeholder.com/600x400?text=Alert+Management'; this.onerror=null;">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="assets/images/project2_4.png" alt="自动化工作流设计器" onerror="this.src='https://via.placeholder.com/600x400?text=Workflow+Designer'; this.onerror=null;">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="assets/images/project2_5.png" alt="性能监控图表" onerror="this.src='https://via.placeholder.com/600x400?text=Performance+Monitoring'; this.onerror=null;">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="assets/images/project2_6.png" alt="用户管理界面" onerror="this.src='https://via.placeholder.com/600x400?text=User+Management'; this.onerror=null;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 技术栈与方法论 -->
+    <section class="project-detail-section">
+        <div class="container">
+            <h2 class="section-title">技术栈与方法论</h2>
+            <div class="technology-content">
+                <h3>前端技术</h3>
+                <div class="tech-stack">
+                    <span class="tech-tag">React 18</span>
+                    <span class="tech-tag">TypeScript</span>
+                    <span class="tech-tag">Redux Toolkit</span>
+                    <span class="tech-tag">Ant Design</span>
+                    <span class="tech-tag">ECharts</span>
+                    <span class="tech-tag">React Query</span>
+                    <span class="tech-tag">Vite</span>
+                </div>
+                <h3>后端技术</h3>
+                <div class="tech-stack">
+                    <span class="tech-tag">Spring Boot 2.7</span>
+                    <span class="tech-tag">Spring Cloud</span>
+                    <span class="tech-tag">MySQL</span>
+                    <span class="tech-tag">Elasticsearch</span>
+                    <span class="tech-tag">Redis</span>
+                    <span class="tech-tag">RabbitMQ</span>
+                    <span class="tech-tag">WebSocket</span>
+                </div>
+                <h3>监控与运维</h3>
+                <div class="tech-stack">
+                    <span class="tech-tag">Prometheus</span>
+                    <span class="tech-tag">Grafana</span>
+                    <span class="tech-tag">Ansible</span>
+                    <span class="tech-tag">Docker</span>
+                    <span class="tech-tag">Kubernetes</span>
+                </div>
+                <div class="methodology">
+                    <h4>开发方法论</h4>
+                    <p>采用敏捷开发方法，使用Scrum框架进行项目管理。以两周为一个迭代周期，每周进行两次站会，每个迭代结束进行评审和回顾。使用GitLab进行代码管理和CI/CD持续集成，Jira进行任务跟踪和管理。前端开发采用组件化、模块化的开发方式，提高代码复用性和可维护性。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 项目反思与收获 -->
+    <section class="project-detail-section">
+        <div class="container">
+            <h2 class="section-title">项目反思与收获</h2>
+            <div class="reflection-content">
+                <div class="reflection-point">
+                    <h4>技术收获</h4>
+                    <p>通过这个项目，我深入学习了React 18和TypeScript的最佳实践，提升了在企业级应用开发方面的经验。特别是在大数据量处理、实时数据展示和复杂权限管理方面积累了宝贵经验。同时，也提高了对前端性能优化的认识和实践能力。</p>
+                </div>
+                <div class="reflection-point">
+                    <h4>挑战与克服</h4>
+                    <p>项目中最大的挑战是如何高效处理和展示大量实时监控数据，以及如何设计灵活可配置的自动化工作流系统。通过不断学习和探索，我们成功解决了这些技术难题，并且在系统上线后获得了客户的高度评价。</p>
+                </div>
+                <div class="reflection-point">
+                    <h4>团队协作</h4>
+                    <p>在这个项目中，我深刻体会到了团队协作的重要性。作为前端架构师，我不仅需要关注技术实现，还需要与产品、后端、测试等多个团队密切合作，确保项目顺利进行。同时，也锻炼了我的技术领导和团队管理能力。</p>
+                </div>
+                <div class="reflection-point">
+                    <h4>未来改进方向</h4>
+                    <p>在未来的迭代中，我们计划进一步优化系统性能，特别是在大规模数据场景下的表现。同时，考虑引入AI技术，实现智能故障预测和自动化修复建议，进一步提升运维效率。此外，也将加强移动端支持，使运维人员能够随时随地监控系统状态。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 相关项目 -->
+    <section class="related-projects">
+        <div class="container">
+            <h2 class="section-title">相关项目</h2>
+            <div class="related-grid">
+                <a href="project1.html" class="related-card">
+                    <img src="assets/images/project1.png" alt="电商保理金融平台" onerror="this.src='https://via.placeholder.com/600x400?text=E-commerce+Factoring+Platform'; this.onerror=null;">
+                    <div class="related-card-info">
+                        <h3 class="related-card-title">电商保理金融平台</h3>
+                        <p class="related-card-category">金融科技</p>
+                    </div>
+                </a>
+                <a href="project3.html" class="related-card">
+                    <img src="assets/images/project3.png" alt="它世界电商" onerror="this.src='https://via.placeholder.com/600x400?text=E-commerce+Platform'; this.onerror=null;">
+                    <div class="related-card-info">
+                        <h3 class="related-card-title">它世界电商</h3>
+                        <p class="related-card-category">电商平台</p>
+                    </div>
+                </a>
+                <a href="project4.html" class="related-card">
+                    <img src="assets/images/project4.jpg" alt="社交媒体仪表盘" onerror="this.src='https://via.placeholder.com/600x400?text=Social+Media+Dashboard'; this.onerror=null;">
+                    <div class="related-card-info">
+                        <h3 class="related-card-title">社交媒体仪表盘</h3>
+                        <p class="related-card-category">数据可视化</p>
+                    </div>
+                </a>
+            </div>
+            <a href="portfolio.html" class="back-button">返回作品集</a>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h3>个人作品集</h3>
+                    <p>展示我的设计和开发作品</p>
+                </div>
+                <div class="footer-links">
+                    <a href="index.html">首页</a>
+                    <a href="about.html">关于我</a>
+                    <a href="portfolio.html">作品集</a>
+                    <a href="contact.html">联系方式</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#" target="_blank">Github</a>
+                    <a href="#" target="_blank">LinkedIn</a>
+                    <a href="#" target="_blank">Twitter</a>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <p>&copy; 2024 个人作品集. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button class="back-to-top" id="back-to-top">↑</button>
+
+    <!-- JavaScript -->
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
