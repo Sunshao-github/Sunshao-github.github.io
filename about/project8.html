@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>亮色潮玩：小霸王插画 | 我的作品集</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* 项目详情页特定样式 */
+        /* 保留所有原有的样式 */
+        
+        /* Banner样式优化 */
+        .banner-section {
+            padding: 20px;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 60px; /* 为固定导航栏留出空间 */
+        }
+        
+        .banner-image {
+            width: 100%;
+            height: auto;
+            max-width: 1200px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: block;
+        }
+        
+        /* 核心信息区样式 */
+        .core-info-section {
+            padding: 40px 20px;
+            background-color: white;
+        }
+        
+        .core-info-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .work-overview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .inspiration-text {
+            flex: 1;
+            min-width: 300px;
+            background-color: #f9f9f9;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .inspiration-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 25px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #ff6b6b;
+        }
+        
+        .inspiration-content {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #555;
+        }
+        
+        .inspiration-content p {
+            margin-bottom: 20px;
+            text-align: justify;
+            hyphens: auto;
+        }
+        
+        .inspiration-content p:first-child {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .inspiration-content p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .highlight {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        
+        .geo-icon {
+            margin-left: 5px;
+            color: #ff6b6b;
+        }
+        
+        .inspiration-content strong {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .overview-image {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .detail-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .work-story {
+            margin-top: 40px;
+            text-align: center;
+        }
+        
+        .story-image-large {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 底部收尾区样式 */
+        .footer-section {
+            padding: 40px 20px;
+            background-color: #f8f9fa;
+            text-align: center;
+        }
+        
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .footer-slogan h3 {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .slogan-deco {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .deco-circle, .deco-triangle {
+            width: 20px;
+            height: 20px;
+            background-color: #ff6b6b;
+            border-radius: 50%;
+        }
+        
+        .deco-triangle {
+            background-color: transparent;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 20px solid #ff6b6b;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 10px 30px;
+            background-color: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            transition: background-color 0.3s;
+        }
+        
+        .back-button:hover {
+            background-color: #555;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .banner-section {
+                padding: 10px;
+                margin-top: 50px;
+            }
+            
+            .banner-image {
+                border-radius: 4px;
+            }
+            
+            .core-info-section {
+                padding: 20px 15px;
+            }
+            
+            .work-overview {
+                gap: 20px;
+            }
+            
+            .inspiration-text {
+                padding: 20px;
+            }
+            
+            .inspiration-title {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .inspiration-content {
+                font-size: 15px;
+                line-height: 1.7;
+            }
+            
+            .inspiration-content p {
+                margin-bottom: 16px;
+            }
+            
+            .footer-section {
+                padding: 30px 15px;
+            }
+            
+            .footer-slogan h3 {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 引入通用导航栏 -->
+    <div id="navbar-container"></div>
+    <script>
+        // 异步加载导航栏
+        fetch('assets/components/navbar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('navbar-container').innerHTML = data;
+            })
+            .catch(error => {
+                console.error('加载导航栏失败:', error);
+            });
+    </script>
+    
+    <!-- 项目详情内容 -->
+    <!-- Banner图片 -->
+    <div class="banner-section">
+        <img src="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511220039578.png" alt="亮色潮玩：小霸王插画" class="banner-image">
+    </div>
+    
+    <!-- 核心信息区 -->
+    <section class="core-info-section">
+        <div class="core-info-container">
+            <!-- 作品概览卡片 -->
+            <div class="work-overview">
+                <div class="inspiration-text">
+                    <h3 class="inspiration-title">基本信息</h3>
+                    <div class="inspiration-content">
+                        <p>名称：盖米（GAMEGE 的拟人化昵称，谐音 “游戏迷”）</p>
+                        <p>身份：拥有自我意识的游戏机精灵</p>
+                        <p>外观：以紫色游戏机为主体，单眼设计（源自机身上的屏幕区域），绿色四肢灵活且充满活力，右手永远握着复古游戏手柄，脚蹬紫色潮鞋，身上的按键和纹路是他的 “个性装饰”。</p>
+                        <p><strong>狂热游戏迷</strong><i class="fas fa-heart geo-icon"></i>对任何年代、任何类型的游戏都抱有极致热情，谈起游戏时会激动地 “噼里啪啦” 闪烁机身按键。</p>
+                        <p>喜欢组织 “游戏派对”，会用自己的 “游戏库”（机身内置的海量古今游戏资源）招待朋友，遇到新手玩家会耐心教学，遇到高手则会兴奋地发起挑战。<span class="highlight">智能助手</span>！<i class="fas fa-star geo-icon"></i></p>
+                        
+                    </div>
+                </div>
+                <div class="overview-image">
+                    <img src="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511220043694.png" alt="小霸王游戏机插画" class="detail-image">
+                </div>
+            </div>
+
+            <!-- 创作灵感模块 -->
+            <div class="creation-inspiration">
+            
+            <!-- 作品故事模块 -->
+            <div class="work-story">
+                <img src="assets/images/Snipaste_2025-11-22_00-06-57.jpg" alt="潮玩小霸王" class="story-image-large">
+            </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 底部收尾区 -->
+    <section class="footer-section">
+        <div class="footer-content">
+            <div class="footer-slogan">
+                <h3>潮流不设限，亮色玩到底</h3>
+                <div class="slogan-deco">
+                    <span class="deco-circle"></span>
+                    <span class="deco-triangle"></span>
+                </div>
+            </div>
+            <div class="footer-button">
+                <a href="portfolio.html" class="back-button">返回作品集首页</a>
+            </div>
+        </div>
+    </section>
+    
+    <script>
+        // 邮箱复制功能
+        function copyEmail() {
+            const email = '3317934186@qq.com';
+            navigator.clipboard.writeText(email).then(() => {
+                alert('邮箱地址已复制到剪贴板: ' + email);
+            }).catch(err => {
+                console.error('复制失败: ', err);
+                // 降级方案
+                const textArea = document.createElement('textarea');
+                textArea.value = email;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('邮箱地址已复制到剪贴板: ' + email);
+            });
+        }
+    </script>
+</body>
+</html>
