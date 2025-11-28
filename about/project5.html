@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校企直聘 APP | 作品集</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- 网站图标 -->
+    <link rel="icon" type="image/svg+xml" href="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511231053182.png">
+    <link rel="shortcut icon" href="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511231053182.png">
+    <meta name="theme-color" content="#ff6b6b">
+    <style>
+        /* 长图部分样式 */
+        .long-image-section {
+            padding: 20px 0;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+        
+        .long-image-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .long-image {
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: block;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .long-image-section {
+                padding: 15px 0;
+            }
+            
+            .long-image-container {
+                padding: 0 15px;
+            }
+            
+            .long-image {
+                border-radius: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 引入通用导航栏 -->
+    <div id="navbar-container"></div>
+    <script>
+        // 异步加载导航栏
+        fetch('assets/components/navbar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('navbar-container').innerHTML = data;
+            })
+            .catch(error => {
+                console.error('加载导航栏失败:', error);
+            });
+    </script>
+    
+    <!-- 项目详情内容 -->
+    <section class="long-image-section">
+        <div class="long-image-container">
+            <img src="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511211747690.jpg" alt="教育培训平台" class="long-image">
+        </div>
+    </section>
+
+    <!-- 底部收尾区 -->
+    <section class="footer-section">
+        <div class="footer-content">
+            <div class="footer-slogan">
+                <h3>专注于大学生求职</h3>
+                <div class="slogan-deco">
+                    <span class="deco-circle"></span>
+                    <span class="deco-triangle"></span>
+                </div>
+            </div>
+            <div class="footer-button">
+                <a href="portfolio.html" class="back-button">返回作品集首页</a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function copyEmail() {
+            const email = '3317934186@qq.com';
+            navigator.clipboard.writeText(email).then(() => {
+                alert('邮箱地址已复制到剪贴板: ' + email);
+            }).catch(err => {
+                console.error('复制失败: ', err);
+                // 降级方案
+                const textArea = document.createElement('textarea');
+                textArea.value = email;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('邮箱地址已复制到剪贴板: ' + email);
+            });
+        }
+    </script>
+
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

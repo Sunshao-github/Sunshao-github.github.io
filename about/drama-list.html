@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电视剧列表</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .page-title {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+        .content-table-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
+        }
+        .content-table-container:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+        .table-header {
+            padding: 20px 24px 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .content-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+        }
+        .content-table th,
+        .content-table td {
+            padding: 16px 24px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+            transition: all 0.2s ease;
+        }
+        .content-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.95rem;
+        }
+        .content-table tbody tr {
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+        .content-table tbody tr:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-1px);
+        }
+        .content-table tr:last-child td {
+            border-bottom: none;
+        }
+        .star-rating {
+            color: #ffb400;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+        .table-footer {
+            padding: 15px 24px;
+            text-align: right;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .page-title {
+                font-size: 1.8rem;
+                margin-bottom: 20px;
+            }
+            .content-table th,
+            .content-table td {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+            .content-table-container {
+                border-radius: 6px;
+            }
+            .star-rating {
+                font-size: 1rem;
+                letter-spacing: 1px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .content-table {
+                font-size: 0.85rem;
+            }
+            .content-table th,
+            .content-table td {
+                padding: 10px;
+            }
+            .table-header {
+                padding: 15px 15px 0;
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="page-title">电视剧推荐列表</h1>
+        <div class="content-table-container">
+            <div class="table-header">电视剧评分排行榜</div>
+            <table class="content-table">
+            <thead>
+                <tr>
+                    <th>排名</th>
+                    <th>剧名</th>
+                    <th>星级</th>
+                    <th>类型</th>
+                    <th>备注</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>首尔破笑组</td>
+                    <td class="star-rating">★★★★★★★</td>
+                    <td>喜剧（韩剧）</td>
+                    <td>韩剧，贼搞笑</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>大奉打更人</td>
+                    <td class="star-rating">★★★★★</td>
+                    <td>玄幻 / 古装</td>
+                    <td>改编自热门小说，剧情节奏紧凑</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>庆余年</td>
+                    <td class="star-rating">★★★★★</td>
+                    <td>古装 / 权谋 / 喜剧</td>
+                    <td>穿越设定 + 群像戏，笑点与权谋结合</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>机智上半场</td>
+                    <td class="star-rating">★★★★★</td>
+                    <td>校园 / 爱情 / 教育</td>
+                    <td>带有教育意义的校园爱情片</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>绝命法官</td>
+                    <td class="star-rating">★★★★★</td>
+                    <td>剧情 / 律政</td>
+                    <td>剧情还可以，一个法官搅动整个局面</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>灿烂又孤独的神鬼怪</td>
+                    <td class="star-rating">★★★★★</td>
+                    <td>爱情 / 奇幻 / 喜剧（韩剧）</td>
+                    <td>韩剧、爱情、搞笑、鬼怪</td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>四方馆</td>
+                    <td class="star-rating">★★★★★</td>
+                    <td>古装 / 外交 / 喜剧</td>
+                    <td>古代外交，搞笑、演技很 ok</td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td>莲花楼</td>
+                    <td class="star-rating">★★★★</td>
+                    <td>古装 / 武侠 / 悬疑</td>
+                    <td>武侠探案 + 群像成长，打戏与剧情双在线</td>
+                </tr>
+                <tr>
+                    <td>9</td>
+                    <td>赘婿</td>
+                    <td class="star-rating">★★★★</td>
+                    <td>古装 / 喜剧 / 商战</td>
+                    <td>穿越商战 + 轻喜剧，节奏轻松下饭</td>
+                </tr>
+                <tr>
+                    <td>10</td>
+                    <td>边水往事</td>
+                    <td class="star-rating">★★★★</td>
+                    <td>悬疑 / 犯罪 / 现实</td>
+                    <td>边境犯罪题材，剧情张力强</td>
+                </tr>
+                <tr>
+                    <td>11</td>
+                    <td>异人之下</td>
+                    <td class="star-rating">★★★★</td>
+                    <td>奇幻 / 动作 / 青春</td>
+                    <td>漫改真人剧，异能设定还原度高</td>
+                </tr>
+                <tr>
+                    <td>12</td>
+                    <td>长安十二时辰</td>
+                    <td class="star-rating">★★★★</td>
+                    <td>古装 / 悬疑 / 权谋</td>
+                    <td>盛唐背景下的反恐剧情，服化道精良</td>
+                </tr>
+                <tr>
+                    <td>13</td>
+                    <td>重生之门</td>
+                    <td class="star-rating">★★★★</td>
+                    <td>悬疑 / 盗窃 / 推理</td>
+                    <td>盗窃题材悬疑剧，双男主对手戏出彩</td>
+                </tr>
+                <tr>
+                    <td>14</td>
+                    <td>清明上河图密码</td>
+                    <td class="star-rating">★★★★</td>
+                    <td>古装 / 悬疑</td>
+                    <td>古代悬疑片</td>
+                </tr>
+                <tr>
+                    <td>15</td>
+                    <td>生万物</td>
+                    <td class="star-rating">★★★★</td>
+                    <td>剧情 / 现实</td>
+                    <td>剧情不是特别现实，但演技特别到位</td>
+                </tr>
+                <tr>
+                    <td>16</td>
+                    <td>大宋少年志 2</td>
+                    <td class="star-rating">★★★★</td>
+                    <td>古装 / 权谋 / 喜剧</td>
+                    <td>权谋、一群少年、略带搞笑、整体还不错</td>
+                </tr>
+                <tr>
+                    <td>17</td>
+                    <td>大宋少年志 1</td>
+                    <td class="star-rating">★★★★</td>
+                    <td>古装 / 权谋 / 喜剧</td>
+                    <td>少年群像权谋剧，反转密集笑点足</td>
+                </tr>
+                <tr>
+                    <td>18</td>
+                    <td>沉香如屑・沉香重华</td>
+                    <td class="star-rating">★★★</td>
+                    <td>古装 / 仙侠 / 爱情</td>
+                    <td>仙侠虐恋题材，服化道特效亮眼</td>
+                </tr>
+                <tr>
+                    <td>19</td>
+                    <td>凡人修仙传</td>
+                    <td class="star-rating">★★★</td>
+                    <td>玄幻 / 修仙 / 动画</td>
+                    <td>修仙题材动画，还原原著修炼体系</td>
+                </tr>
+            </tbody>
+            </table>
+            <div class="table-footer">共收录 19 部电视剧</div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作品集 | 原石创见集</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- 网站图标 -->
+    <link rel="icon" type="image/svg+xml" href="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511231053182.png">
+    <link rel="shortcut icon" href="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511231053182.png">
+    <meta name="theme-color" content="#ff6b6b">
+</head>
+<body>
+    <!-- 引入通用导航栏 -->
+    <div id="navbar-container"></div>
+    <script>
+        // 异步加载导航栏
+        fetch('assets/components/navbar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('navbar-container').innerHTML = data;
+            })
+            .catch(error => {
+                console.error('加载导航栏失败:', error);
+            });
+    </script>
+    
+    <!-- 页面标题 -->
+    <section class="page-header">
+        <div class="container">
+            <h1>我的作品集</h1>
+            <p>探索我的最新项目和创意作品</p>
+        </div>
+    </section>
+    
+    <!-- 作品集区域 -->
+    <section class="portfolio-section">
+        <div class="container">
+            <!-- 筛选按钮 -->
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">全部</button>
+                <button class="filter-btn" data-filter="web">原型设计</button>
+                <button class="filter-btn" data-filter="UI Design">UI设计</button>
+                <button class="filter-btn" data-filter="Graphic Design">平面设计</button>
+            </div>
+            
+            <!-- 项目网格 -->
+            <div class="portfolio-grid">
+                <!-- 项目卡片 1 -->
+                <a href="project1.html" class="project-card" data-category="web">
+                    <div class="project-image">
+                        <img src="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511270023582.png" alt="电商网站设计" onerror="this.src='https://via.placeholder.com/600x400?text=E-commerce+Website'; this.onerror=null;">
+                    </div>
+                    <div class="project-info">
+                        <h3>电商保理金融平台</h3>
+                        <div class="project-tags">
+                            <span class="tag">供应链金融</span>
+                            <span class="tag">B端SaaS</span>
+                            <span class="tag">还款引擎</span>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- 项目卡片 2 -->
+                <a href="project2.html" class="project-card" data-category="web">
+                    <div class="project-image">
+                        <img src="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511262217889.png" alt="响应式博客" onerror="this.src='https://via.placeholder.com/600x400?text=Responsive+Blog'; this.onerror=null;">
+                    </div>
+                    <div class="project-info">
+                        <h3>运维管理系统</h3>
+                        <div class="project-tags">
+                            <span class="tag">智慧物业</span>
+                            <span class="tag">巡检维保</span>
+                            <span class="tag">状态机设计</span>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- 项目卡片 2 -->
+                <a href="project4.html" class="project-card" data-category="web">
+                    <div class="project-image">
+                        <img src="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511262347409.png" alt="响应式博客" onerror="this.src='https://via.placeholder.com/600x400?text=Responsive+Blog'; this.onerror=null;">
+                    </div>
+                    <div class="project-info">
+                        <h3>销售管家 CRM</h3>
+                        <div class="project-tags">
+                            <span class="tag">CRM</span>
+                            <span class="tag">销售赋能</span>
+                        </div>
+                    </div>
+                </a>
+                <!-- 项目卡片 3 -->
+                <a href="project3.html" class="project-card" data-category="web">
+                    <div class="project-image">
+                        <img src="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511261211063.jpg" alt="任务管理应用" onerror="this.src='https://via.placeholder.com/600x400?text=Task+Manager+App'; this.onerror=null;">
+                    </div>
+                    <div class="project-info">
+                        <h3>它世界社交分销平台</h3>
+                        <div class="project-tags">
+                            <span class="tag">分销裂变</span>
+                            <span class="tag">社交电商</span>
+                        </div>
+                    </div>
+                </a>
+                <!-- 项目卡片 3 -->
+                <a href="project10.html" class="project-card" data-category="web">
+                    <div class="project-image">
+                        <img src="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511211735400.jpg" alt="任务管理应用" onerror="this.src='https://via.placeholder.com/600x400?text=Task+Manager+App'; this.onerror=null;">
+                    </div>
+                    <div class="project-info">
+                        <h3>AI智能预警平台</h3>
+                        <div class="project-tags">
+                            <span class="tag">分销裂变</span>
+                            <span class="tag">社交电商</span>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- 项目卡片 5 -->
+                <a href="project5.html" class="project-card" data-category="UI Design">
+                    <div class="project-image">
+                        <img src="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511211737334.jpg" alt="音乐播放器UI" onerror="this.src='https://via.placeholder.com/600x400?text=Music+Player+UI'; this.onerror=null;">
+                    </div>
+                    <div class="project-info">
+                        <h3>校企直聘 APP</h3>
+                        <div class="project-tags">
+                            <span class="tag">UI设计</span>
+                            <span class="tag">校园招聘</span>
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- 项目卡片 6 -->
+                <a href="project6.html" class="project-card" data-category="UI Design">
+                    <div class="project-image">
+                        <img src="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511211740614.png" alt="作品集网站" onerror="this.src='https://via.placeholder.com/600x400?text=Portfolio+Website'; this.onerror=null;">
+                    </div>
+                    <div class="project-info">
+                        <h3>莫知 APP</h3>
+                        <div class="project-tags">
+                            <span class="tag">UI设计</span>
+                            <span class="tag">内容社交</span>
+                        </div>
+                    </div>
+                </a>
+                <!-- 项目卡片 7 -->
+                <a href="project7.html" class="project-card" data-category="Graphic Design">
+                    <div class="project-image">
+                        <img src="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511211751693.png" alt="作品集网站" onerror="this.src='https://via.placeholder.com/600x400?text=Portfolio+Website'; this.onerror=null;">
+                    </div>
+                    <div class="project-info">
+                        <h3>平面作品</h3>
+                        <div class="project-tags">
+                            <span class="tag">平面设计</span>
+                            <span class="tag">Adobe Photoshop</span>
+                        </div>
+                    </div>
+                </a>
+                <!-- 项目卡片 8 -->
+                <a href="project8.html" class="project-card" data-category="Graphic Design">
+                    <div class="project-image">
+                        <img src="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511212030365.png" alt="作品集网站" onerror="this.src='https://via.placeholder.com/600x400?text=Portfolio+Website'; this.onerror=null;">
+                    </div>
+                    <div class="project-info">
+                        <h3>小霸王</h3>
+                        <div class="project-tags">
+                            <span class="tag">插画设计</span>
+                            <span class="tag">Adobe Illustrator</span>
+                        </div>
+                    </div>
+                </a>
+                <!-- 项目卡片 9 -->
+                <a href="project9.html" class="project-card" data-category="Graphic Design">
+                    <div class="project-image">
+                        <img src="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511212330213.png" alt="作品集网站" onerror="this.src='https://via.placeholder.com/600x400?text=Portfolio+Website'; this.onerror=null;">
+                    </div>
+                    <div class="project-info">
+                        <h3>IP 设计</h3>
+                        <div class="project-tags">
+                            <span class="tag">IP形象</span>
+                            <span class="tag">Adobe Illustrator</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 项目卡片样式调整 -->
+    <style>
+        .project-card {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 导航栏样式修改 - 移除悬浮背景色，只保留下划线 */
+        .navbar-menu li:not(.email-icon-wrapper):not(.wechat-icon-wrapper) a:hover {
+            background-color: transparent !important;
+        }
+        
+        .navbar-menu li:not(.email-icon-wrapper):not(.wechat-icon-wrapper) a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 3px;
+            transition: var(--transition-base);
+            transform: translateX(-50%);
+        }
+        
+        .navbar-menu li:not(.email-icon-wrapper):not(.wechat-icon-wrapper) a:hover::after {
+            width: 80%; /* 增加下划线宽度 */
+        }
+        
+        /* 邮箱图标容器样式 */
+        .email-icon-wrapper {
+            position: relative;
+        }
+        
+        /* 邮箱图标特殊处理，防止点击效果 */
+        .email-icon-wrapper .email-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            padding: 8px !important;
+            border-radius: 50% !important;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--primary-color);
+            text-decoration: none !important;
+            border: none !important;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease !important;
+            z-index: 2;
+        }
+        
+        .email-icon-wrapper .email-icon:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* 确保不显示下划线 */
+        .email-icon-wrapper .email-icon::after {
+            display: none !important;
+            content: none !important;
+        }
+        
+        /* 防止点击时的视觉反馈 */
+        .email-icon-wrapper .email-icon:active {
+            transform: none !important;
+            transition: none !important;
+        }
+        
+        /* 微信图标样式 */
+        .wechat-icon-wrapper {
+            position: relative;
+        }
+        
+        .wechat-icon-wrapper .wechat-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            padding: 8px !important;
+            border-radius: 50% !important;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--primary-color); /* 改为与邮箱图标一致的颜色 */
+            text-decoration: none !important;
+            border: none !important;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease !important;
+            z-index: 2;
+        }
+        
+        .wechat-icon-wrapper .wechat-icon:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* 确保不显示下划线 */
+        .wechat-icon-wrapper .wechat-icon::after {
+            display: none !important;
+            content: none !important;
+        }
+        
+        /* 防止点击时的视觉反馈 */
+        .wechat-icon-wrapper .wechat-icon:active {
+            transform: none !important;
+            transition: none !important;
+        }
+        
+        /* 二维码样式 */
+        .wechat-qrcode {
+            position: absolute;
+            top: 120%;
+            right: 0;
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+            z-index: 1000;
+        }
+        
+        /* 二维码箭头指示器 */
+        .wechat-qrcode::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            right: 16px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid white;
+        }
+        
+        /* 二维码图片样式 */
+        .wechat-qrcode img {
+            width: 200px;
+            height: 200px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        /* 二维码文字样式 */
+        .wechat-qrcode p {
+            margin: 0;
+            font-size: 14px;
+            color: #333;
+            text-align: center;
+        }
+        
+        /* 鼠标悬浮时显示二维码 */
+        .wechat-icon-wrapper .wechat-icon:hover .wechat-qrcode {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+    </style>
+    
+    <script src="assets/js/main.js"></script>
+    <script>
+        function copyEmail() {
+            const email = '3317934186@qq.com';
+            navigator.clipboard.writeText(email).then(() => {
+                alert('邮箱地址已复制到剪贴板: ' + email);
+            }).catch(err => {
+                console.error('复制失败: ', err);
+                // 降级方案
+                const textArea = document.createElement('textarea');
+                textArea.value = email;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('邮箱地址已复制到剪贴板: ' + email);
+            });
+        }
+    </script>
+</body>
+</html>
