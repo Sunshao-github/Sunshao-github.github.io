@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP 设计 | 作品集</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- 网站图标 -->
+    <link rel="icon" type="image/svg+xml" href="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511231053182.png">
+    <link rel="shortcut icon" href="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511231053182.png">
+    <meta name="theme-color" content="#ff6b6b">
+    <style>
+        /* 项目详情页特定样式 */
+        /* 保留所有原有的样式 */
+        
+        /* 让图片居中显示 */
+        .long-image-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 20px 0;
+        }
+        
+        .long-image-container {
+            max-width: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .long-image {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        /* 图片覆盖返回按钮样式 */
+        .image-overlay-button {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+        
+        .image-overlay-button:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+            transform: translateX(-50%) translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .image-overlay-button {
+                padding: 10px 20px;
+                font-size: 14px;
+                bottom: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 引入通用导航栏 -->
+    <div id="navbar-container"></div>
+    <script>
+        // 异步加载导航栏
+        fetch('assets/components/navbar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('navbar-container').innerHTML = data;
+            })
+            .catch(error => {
+                console.error('加载导航栏失败:', error);
+            });
+    </script>
+    
+    <!-- 项目详情内容 -->
+    <section class="long-image-section">
+        <div class="long-image-container" style="position: relative;">
+            <img src="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511212324249.jpg" alt="健康管理APP长图" class="long-image">
+            <a href="portfolio.html" class="image-overlay-button">返回作品集</a>
+        </div>
+    </section>
+    <script>
+        function copyEmail() {
+            const email = '3317934186@qq.com';
+            navigator.clipboard.writeText(email).then(() => {
+                alert('邮箱地址已复制到剪贴板: ' + email);
+            }).catch(err => {
+                console.error('复制失败: ', err);
+                // 降级方案
+                const textArea = document.createElement('textarea');
+                textArea.value = email;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('邮箱地址已复制到剪贴板: ' + email);
+            });
+        }
+    </script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

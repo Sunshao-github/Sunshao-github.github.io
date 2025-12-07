@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>青海湖 - 旅行详情</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- 网站图标 -->
+    <link rel="icon" type="image/svg+xml" href="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511231053182.png">
+    <link rel="shortcut icon" href="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511231053182.png">
+    <meta name="theme-color" content="#ff6b6b">
+    <style>
+        /* 全局样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f0f9ff;
+            overflow-x: hidden;
+        }
+        
+        /* 导航栏样式 */
+        #navbar-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        
+        /* 主内容容器 */
+        .detail-container {
+            margin-top: 80px; /* 为导航栏留出空间 */
+        }
+        
+        /* 1. 顶部横幅区 */
+        .top-banner {
+            background-color: #ffeb3b;
+            padding: 2rem 1rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .top-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(0,0,0,0.1)"/></svg>');
+            z-index: -1;
+        }
+        
+        .banner-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #e53935;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 0px white;
+        }
+        
+        .banner-subtitle {
+            font-size: 1.5rem;
+            color: #ff5722;
+            margin-bottom: 1.5rem;
+        }
+        
+        .banner-price {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #e53935;
+            background-color: white;
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transform: rotate(-2deg);
+        }
+        
+        /* 2. 行程时间线区 */
+        .itinerary-section {
+            background-color: #4fc3f7;
+            padding: 3rem 1rem;
+            position: relative;
+        }
+        
+        .itinerary-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml,<svg width="20" height="20" xmlns="http://www.w3.org/2000/svg"><path d="M10 0 L20 20 L0 20 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+        }
+        
+        .timeline-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        /* 时间线 */
+        .timeline {
+            position: relative;
+            padding: 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: #fff;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+        
+        /* 日期卡片 */
+        .day-card {
+            display: flex;
+            margin-bottom: 3rem;
+            position: relative;
+            z-index: 2;
+            align-items: center;
+        }
+        
+        .day-card:nth-child(odd) {
+            flex-direction: row;
+        }
+        
+        .day-card:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+        
+        .day-number {
+            background-color: #ffeb3b;
+            color: #e53935;
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 0.8rem 1.2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+        }
+        
+        .card-content {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            overflow: hidden;
+            width: calc(50% - 4rem);
+            position: relative;
+            transform: rotate(1deg);
+            transition: all 0.3s ease;
+        }
+        
+        .card-content:hover {
+            transform: rotate(0deg) translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+        }
+        
+        .day-card:nth-child(odd) .card-content {
+            margin-right: 2rem;
+        }
+        
+        .day-card:nth-child(even) .card-content {
+            margin-left: 2rem;
+        }
+        
+        .card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .card-info {
+            padding: 1.5rem;
+        }
+        
+        .location-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .location-description {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 1rem;
+        }
+        
+        .location-highlights {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .location-highlights li {
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+            color: #666;
+        }
+        
+        .location-highlights li::before {
+            content: '✨';
+            position: absolute;
+            left: 0;
+            color: #ffeb3b;
+        }
+        
+        /* 装饰元素 */
+        .decoration {
+            position: absolute;
+            font-size: 2rem;
+            z-index: 1;
+        }
+        
+        .decoration-1 {
+            top: 10%;
+            left: 10%;
+            transform: rotate(10deg);
+        }
+        
+        .decoration-2 {
+            top: 20%;
+            right: 15%;
+            transform: rotate(-15deg);
+        }
+        
+        .decoration-3 {
+            bottom: 15%;
+            left: 15%;
+            transform: rotate(5deg);
+        }
+        
+        .decoration-4 {
+            bottom: 20%;
+            right: 10%;
+            transform: rotate(-10deg);
+        }
+        
+        /* 3. 底部信息区 */
+        .footer-section {
+            background-color: #fff;
+            padding: 3rem 1rem;
+            text-align: center;
+        }
+        
+        .qr-code {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 2rem;
+            background-color: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: #e53935;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            transform: rotate(-1deg);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-top: 1rem;
+        }
+        
+        .back-button:hover {
+            background-color: #c62828;
+            transform: rotate(0deg) translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .banner-title {
+                font-size: 2rem;
+            }
+            
+            .banner-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .banner-price {
+                font-size: 1.5rem;
+            }
+            
+            .timeline::before {
+                left: 2rem;
+            }
+            
+            .day-card {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-left: 4rem;
+            }
+            
+            .day-card:nth-child(even) {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .day-number {
+                left: 2rem;
+                transform: translateX(-50%);
+            }
+            
+            .card-content {
+                width: 100%;
+                margin: 0 !important;
+                margin-top: 1rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 引用通用导航栏 -->
+    <div id="navbar-container"></div>
+    <script>
+        // 异步加载导航栏
+        fetch('assets/components/navbar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('navbar-container').innerHTML = data;
+            })
+            .catch(error => {
+                console.error('加载导航栏失败:', error);
+            });
+    </script>
+    
+    <div class="detail-container">
+        <!-- 1. 顶部横幅区 -->
+        <section class="top-banner">
+            <h1 class="banner-title">生活无解 一起撒野</h1>
+            <h2 class="banner-subtitle">出发[趣]青海湖</h2>
+            <div class="banner-price">纯玩三钻酒店小团 → 4688元/人</div>
+        </section>
+        
+        <!-- 2. 行程时间线区 -->
+        <section class="itinerary-section">
+            <!-- 装饰元素 -->
+            <div class="decoration decoration-1">🧳</div>
+            <div class="decoration decoration-2">🚗</div>
+            <div class="decoration decoration-3">📸</div>
+            <div class="decoration decoration-4">🍺</div>
+            
+            <div class="timeline-container">
+                <div class="timeline">
+                    <!-- DAY 1 -->
+                    <div class="day-card">
+                        <div class="day-number">DAY 1</div>
+                        <div class="card-content">
+                            <img src="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511302045548.png" alt="青海湖" class="card-image">
+                            <div class="card-info">
+                                <h3 class="location-name">青海湖</h3>
+                                <p class="location-description">宛如一颗蓝宝石镶嵌在草原上</p>
+                                <ul class="location-highlights">
+                                    <li>环湖骑行，感受湖水的清凉</li>
+                                    <li>欣赏金黄的油菜花田</li>
+                                    <li>拍摄日落美景</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- DAY 2 -->
+                    <div class="day-card">
+                        <div class="day-number">DAY 2</div>
+                        <div class="card-content">
+                            <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&h=500&fit=crop&q=80" alt="茶卡盐湖" class="card-image">
+                            <div class="card-info">
+                                <h3 class="location-name">茶卡盐湖</h3>
+                                <p class="location-description">中国的天空之镜</p>
+                                <ul class="location-highlights">
+                                    <li>拍摄天空之镜倒影</li>
+                                    <li>乘坐小火车游览盐湖</li>
+                                    <li>欣赏盐湖日落</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- DAY 3 -->
+                    <div class="day-card">
+                        <div class="day-number">DAY 3</div>
+                        <div class="card-content">
+                            <img src="https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=800&h=500&fit=crop&q=80" alt="黑马河" class="card-image">
+                            <div class="card-info">
+                                <h3 class="location-name">黑马河</h3>
+                                <p class="location-description">看日出的绝佳地点</p>
+                                <ul class="location-highlights">
+                                    <li>早起观看青海湖日出</li>
+                                    <li>湖边喂海鸥</li>
+                                    <li>体验当地牧民生活</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- DAY 4 -->
+                    <div class="day-card">
+                        <div class="day-number">DAY 4</div>
+                        <div class="card-content">
+                            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=500&fit=crop&q=80" alt="二郎剑景区" class="card-image">
+                            <div class="card-info">
+                                <h3 class="location-name">二郎剑景区</h3>
+                                <p class="location-description">青海湖的核心景区</p>
+                                <ul class="location-highlights">
+                                    <li>乘坐游船游览青海湖</li>
+                                    <li>参观鱼雷发射基地</li>
+                                    <li>欣赏湖光山色</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 3. 底部信息区 -->
+        <section class="footer-section">
+            <div class="qr-code">
+                <!-- 这里可以放置二维码图片 -->
+                <svg width="130" height="130" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="130" height="130" fill="white" stroke="#333" stroke-width="2"/>
+                    <text x="65" y="70" font-size="12" text-anchor="middle" fill="#666">扫码了解更多</text>
+                </svg>
+            </div>
+            <a href="lifestyle.html" class="back-button">
+                ← 返回列表
+            </a>
+        </section>
+    </div>
+    
+    <!-- 引入JavaScript文件 -->
+    <script src="assets/js/main.js"></script>
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 可以在这里添加额外的交互逻辑
+        });
+    </script>
+</body>
+</html>

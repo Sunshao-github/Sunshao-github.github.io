@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在路上，在烟火里</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- 网站图标 -->
+    <link rel="icon" type="image/svg+xml" href="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511231053182.png">
+    <link rel="shortcut icon" href="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511231053182.png">
+    <meta name="theme-color" content="#ff6b6b">
+    <style>
+        /* 页面标题区样式 */
+        .hero-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511302056012.jpg') center/cover no-repeat;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            z-index: 10;
+            transition: all 0.5s ease;
+        }
+        
+        /* 英雄区域隐退状态 */
+        .hero-section.hidden {
+            opacity: 0;
+            transform: scale(1.05);
+            pointer-events: none;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            opacity: 0.9;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 页面主体内容样式 */
+        .main-content {
+            position: relative;
+            z-index: 20;
+            background-color: white;
+            margin-top: 100vh;
+            /* 确保没有transform属性影响粘性定位 */
+        }
+        
+        /* 分类切换区容器样式 - 用于粘性定位 */
+        .category-tabs-section {
+            position: sticky;
+            top: 80px; /* 导航栏高度约为80px */
+            z-index: 900; /* 低于导航栏z-index */
+            /* 添加背景图片 */
+            /* background-image: url('https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511302147981.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat; */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 分类切换区样式 */
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            /* padding: 2rem 0; */
+            margin: 0;
+            /* 添加半透明背景层增强文字可读性 */
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+
+        .category-tab {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            background: none;
+            border: none;
+            outline: none;
+        }
+
+        .category-tab.active {
+            color: #3498db;
+        }
+
+        .category-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 3px;
+            background-color: #3498db;
+            border-radius: 2px;
+        }
+
+        /* 内容展示区样式 */
+        .content-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 2rem;
+        }
+
+        /* 分类内容容器 */
+        .category-content {
+            display: none;
+        }
+
+        .category-content.active {
+            display: block;
+        }
+
+        /* 旅行板块 - 目的地卡片网格 */
+        .destination-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .destination-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .destination-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .destination-image {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .destination-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .destination-card:hover .destination-image img {
+            transform: scale(1.1);
+        }
+
+        .destination-info {
+            padding: 1.5rem;
+        }
+
+        .destination-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .destination-subtitle {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0;
+        }
+        
+        /* 当有描述文字时增加底部外边距 */
+        .destination-description {
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.5;
+            margin-top: 1rem;
+        }
+
+        .destination-description {
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        /* 骑行板块 - 路线时间轴 */
+        .timeline {
+            position: relative;
+            padding-left: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #e0e0e0;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 3rem;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -2.5rem;
+            top: 0;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background-color: #3498db;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+            z-index: 1;
+        }
+
+        .timeline-content {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline-date {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 1rem;
+        }
+
+        .timeline-images {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .timeline-images img {
+            width: 50%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .timeline-info {
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        /* 做饭板块 - 食谱卡片 */
+        .recipe-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .recipe-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .recipe-image {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+        }
+
+        .recipe-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .recipe-info {
+            padding: 1.5rem;
+        }
+
+        .recipe-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .recipe-meta {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .recipe-description {
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        /* 折叠面板样式 */
+        .recipe-steps {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .recipe-steps.active {
+            max-height: 500px;
+        }
+
+        .toggle-steps {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: #f5f5f5;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: #3498db;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toggle-steps:hover {
+            background-color: #e0e0e0;
+        }
+
+        .toggle-steps::after {
+            content: '+';
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-steps.active::after {
+            transform: rotate(45deg);
+        }
+
+        .steps-content {
+            padding: 1rem;
+            background-color: #fafafa;
+            border-radius: 0 0 6px 6px;
+        }
+
+        .step-item {
+            margin-bottom: 1rem;
+        }
+
+        .step-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-images {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .step-images img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .main-content {
+                margin-top: 100vh;
+            }
+            
+            .category-tabs {
+                gap: 1rem;
+            }
+            
+            .category-tab {
+                font-size: 1rem;
+                padding: 0.8rem 1rem;
+            }
+            
+            .destination-grid,
+            .recipe-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .timeline-images {
+                flex-direction: column;
+            }
+            
+            .timeline-images img {
+                width: 100%;
+                height: 120px;
+            }
+        }
+    </style>
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            const heroSection = document.querySelector('.hero-section');
+            const mainContent = document.querySelector('.main-content');
+            
+            // 滚动事件监听，实现英雄区域隐退效果
+            window.addEventListener('scroll', function() {
+                const scrollPosition = window.scrollY;
+                
+                // 计算标签栏吸附到导航栏时的滚动位置
+                // 标签栏top:80px，导航栏高度约80px，所以需要滚动(100vh - 160px)左右主图才会完全消失
+                const heroHeight = window.innerHeight;
+                const navbarHeight = 80;
+                const tabHeight = 120; // 标签栏自身高度
+                const fullyHiddenPosition = heroHeight - navbarHeight - tabHeight;
+                
+                // 调整透明度变化率，让主图在标签栏吸附时才完全消失
+                const opacity = Math.max(0, 1 - scrollPosition / fullyHiddenPosition);
+                
+                // 应用样式
+                heroSection.style.opacity = opacity;
+                
+                // 当标签栏完全吸附到导航栏下方时，添加hidden类
+                if (scrollPosition > fullyHiddenPosition) {
+                    heroSection.classList.add('hidden');
+                } else {
+                    heroSection.classList.remove('hidden');
+                }
+            });
+            
+            // 分类切换功能
+            const tabs = document.querySelectorAll('.category-tab');
+            const contents = document.querySelectorAll('.category-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const category = this.dataset.category;
+                    
+                    // 移除所有active类
+                    tabs.forEach(t => t.classList.remove('active'));
+                    contents.forEach(c => c.classList.remove('active'));
+                    
+                    // 添加active类到当前选中的标签和内容
+                    this.classList.add('active');
+                    document.getElementById(category).classList.add('active');
+                });
+            });
+        });
+        
+        // 步骤折叠功能
+        function toggleSteps(button) {
+            const steps = button.nextElementSibling;
+            button.classList.toggle('active');
+            steps.classList.toggle('active');
+        }
+    </script>
+</head>
+<body>
+    <!-- 引用通用导航栏 -->
+    <div id="navbar-container"></div>
+    
+    <!-- 页面标题区 -->
+    <section class="hero-section">
+        <h1 class="hero-title">在路上，在烟火里</h1>
+        <p class="hero-subtitle">旅行见世界，骑行享自由，做饭暖生活</p>
+    </section>
+    
+    <!-- 页面主体内容 -->
+    <div class="main-content">
+        <!-- 内容分类切换区 - 放在main-content内部，用于粘性定位 -->
+        <section class="category-tabs-section">
+            <div class="category-tabs">
+                <button class="category-tab active" data-category="travel">旅行</button>
+                <button class="category-tab" data-category="cooking">做饭</button>
+                <button class="category-tab" data-category="cycling">骑行</button>
+            </div>
+        </section>
+        
+        <!-- 核心内容展示区 -->
+        <section class="content-section">
+        <!-- 旅行板块 -->
+        <div class="category-content active" id="travel">
+            <div class="destination-grid">
+                <div class="destination-card" onclick="window.location.href='destination-detail.html?destination=青海湖'" style="cursor: pointer;">
+                    <div class="destination-image">
+                        <img src="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202512011017747.jpg" alt="青海湖">
+                    </div>
+                    <div class="destination-info">
+                        <h3 class="destination-title">十里琅珰</h3>
+                        <p class="destination-subtitle">2023.05 | 徒步</p>
+                        
+                    </div>
+                </div>
+                
+                <div class="destination-card">
+                    <div class="destination-image">
+                        <img src="https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=600&h=400&fit=crop&q=80" alt="大理古城">
+                    </div>
+                    <div class="destination-info">
+                        <h3 class="destination-title">大理古城</h3>
+                        <p class="destination-subtitle">2023.10 | 慢游古城・品美食</p>
+                        
+                    </div>
+                </div>
+                
+                
+        
+        <!-- 骑行板块 -->
+        <div class="category-content" id="cycling">
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot">1</div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">2024.05</div>
+                        <h3 class="timeline-title">城市绕城骑行</h3>
+                        <div class="timeline-images">
+                            <img src="https://images.unsplash.com/photo-1556656793-08538906a9f8?w=600&h=400&fit=crop&q=80" alt="出发照">
+                            <img src="https://images.unsplash.com/photo-1507035895480-2271c049e2d0?w=600&h=400&fit=crop&q=80" alt="路线风景">
+                        </div>
+                        <p class="timeline-info">全程 52km | 逆风爬坡，解锁新视角。沿着城市的边缘骑行，发现了许多平时忽略的美景。</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot">2</div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">2023.10</div>
+                        <h3 class="timeline-title">近郊山道骑行</h3>
+                        <div class="timeline-images">
+                            <img src="https://images.unsplash.com/photo-1536252374814-7223e1116229?w=600&h=400&fit=crop&q=80" alt="山道风景">
+                            <img src="https://images.unsplash.com/photo-1587145841186-41178063a691?w=600&h=400&fit=crop&q=80" alt="终点合影">
+                        </div>
+                        <p class="timeline-info">全程 45km | 挑战陡坡，享受下坡的快感。在山间呼吸新鲜空气，感受大自然的魅力。</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot">3</div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">2023.06</div>
+                        <h3 class="timeline-title">沿海公路骑行</h3>
+                        <div class="timeline-images">
+                            <img src="https://images.unsplash.com/photo-1521223890158-f9f7c3d5d504?w=600&h=400&fit=crop&q=80" alt="沿海公路">
+                            <img src="https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?w=600&h=400&fit=crop&q=80" alt="海边休息">
+                        </div>
+                        <p class="timeline-info">全程 68km | 吹着海风，听着海浪声骑行。沿途的海景美不胜收，让人心情愉悦。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 做饭板块 -->
+        <div class="category-content" id="cooking">
+            <div class="recipe-grid">
+                <div class="recipe-card">
+                    <div class="recipe-image">
+                        <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&h=400&fit=crop&q=80" alt="番茄牛腩">
+                    </div>
+                    <div class="recipe-info">
+                        <h3 class="recipe-name">番茄牛腩</h3>
+                        <div class="recipe-meta">
+                            <span>耗时：30 分钟</span>
+                            <span>难度：入门</span>
+                        </div>
+                        <p class="recipe-description">零失败番茄牛腩，汤汁泡饭绝了。酸甜可口，营养丰富，适合家庭日常烹饪。</p>
+                        <button class="toggle-steps" onclick="toggleSteps(this)">查看步骤</button>
+                        <div class="recipe-steps">
+                            <div class="steps-content">
+                                <div class="step-item">
+                                    <div class="step-title">步骤 1：准备食材</div>
+                                    <p>牛腩切块，番茄去皮切块，准备葱姜蒜。</p>
+                                    <div class="step-images">
+                                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&h=200&fit=crop&q=80" alt="切牛腩">
+                                        <img src="https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=200&h=200&fit=crop&q=80" alt="切番茄">
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-title">步骤 2：烹饪过程</div>
+                                    <p>牛腩焯水后，用油煸炒，加入番茄炖煮 20 分钟。</p>
+                                    <div class="step-images">
+                                        <img src="https://images.unsplash.com/photo-1563245372-2203c1080969?w=200&h=200&fit=crop&q=80" alt="煸炒牛腩">
+                                        <img src="https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=200&h=200&fit=crop&q=80" alt="炖煮">
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-title">步骤 3：完成</div>
+                                    <p>加入盐和糖调味，撒上葱花即可出锅。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="recipe-card">
+                    <div class="recipe-image">
+                        <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&h=400&fit=crop&q=80" alt="手作披萨">
+                    </div>
+                    <div class="recipe-info">
+                        <h3 class="recipe-name">手作披萨</h3>
+                        <div class="recipe-meta">
+                            <span>耗时：45 分钟</span>
+                            <span>难度：进阶</span>
+                        </div>
+                        <p class="recipe-description">自制披萨底，口感酥脆，配料丰富。可以根据自己的喜好添加各种 toppings。</p>
+                        <button class="toggle-steps" onclick="toggleSteps(this)">查看步骤</button>
+                        <div class="recipe-steps">
+                            <div class="steps-content">
+                                <div class="step-item">
+                                    <div class="step-title">步骤 1：制作披萨底</div>
+                                    <p>面粉、酵母、水混合揉成面团，发酵 30 分钟。</p>
+                                    <div class="step-images">
+                                        <img src="https://images.unsplash.com/photo-1517666747211-22b8f1007f85?w=200&h=200&fit=crop&q=80" alt="揉面团">
+                                        <img src="https://images.unsplash.com/photo-1543512214-318c75c84462?w=200&h=200&fit=crop&q=80" alt="发酵面团">
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-title">步骤 2：添加配料</div>
+                                    <p>擀平面团，涂抹番茄酱，撒上芝士和各种配料。</p>
+                                    <div class="step-images">
+                                        <img src="https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=200&h=200&fit=crop&q=80" alt="擀面团">
+                                        <img src="https://images.unsplash.com/photo-1593508512255-86ab42a8e620?w=200&h=200&fit=crop&q=80" alt="添加配料">
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-title">步骤 3：烤制</div>
+                                    <p>烤箱预热 200°C，烤制 15-20 分钟即可。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="recipe-card">
+                    <div class="recipe-image">
+                        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop&q=80" alt="清蒸鱼">
+                    </div>
+                    <div class="recipe-info">
+                        <h3 class="recipe-name">清蒸鱼</h3>
+                        <div class="recipe-meta">
+                            <span>耗时：20 分钟</span>
+                            <span>难度：入门</span>
+                        </div>
+                        <p class="recipe-description">鲜嫩多汁的清蒸鱼，保持了鱼的原汁原味。营养健康，适合老人和小孩。</p>
+                        <button class="toggle-steps" onclick="toggleSteps(this)">查看步骤</button>
+                        <div class="recipe-steps">
+                            <div class="steps-content">
+                                <div class="step-item">
+                                    <div class="step-title">步骤 1：准备鱼</div>
+                                    <p>鱼处理干净，在鱼身上划几刀，撒上葱姜蒜。</p>
+                                    <div class="step-images">
+                                        <img src="https://images.unsplash.com/photo-1516726817505-f5ed825624d8?w=200&h=200&fit=crop&q=80" alt="处理鱼">
+                                        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop&q=80" alt="准备葱姜蒜">
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-title">步骤 2：清蒸</div>
+                                    <p>水烧开后，将鱼放入蒸锅，大火蒸 8-10 分钟。</p>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-title">步骤 3：调味</div>
+                                    <p>取出鱼，倒掉多余的汤汁，淋上蒸鱼豉油，浇上热油即可。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    </div>
+    
+    <script>
+        // 加载通用导航栏
+        fetch('assets/components/navbar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('navbar-container').innerHTML = data;
+            })
+            .catch(error => console.error('加载导航栏失败:', error));
+        
+        // 分类切换功能
+        const categoryTabs = document.querySelectorAll('.category-tab');
+        const categoryContents = document.querySelectorAll('.category-content');
+        
+        categoryTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // 移除所有活跃状态
+                categoryTabs.forEach(t => t.classList.remove('active'));
+                categoryContents.forEach(c => c.classList.remove('active'));
+                
+                // 添加当前活跃状态
+                const category = tab.getAttribute('data-category');
+                tab.classList.add('active');
+                document.getElementById(category).classList.add('active');
+            });
+        });
+        
+        // 步骤折叠功能
+        function toggleSteps(button) {
+            button.classList.toggle('active');
+            const steps = button.nextElementSibling;
+            steps.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

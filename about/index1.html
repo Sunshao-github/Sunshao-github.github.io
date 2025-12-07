@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>原石创见集</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- 网站图标 -->
+    <link rel="icon" type="image/svg+xml" href="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511231053182.png">
+    <link rel="shortcut icon" href="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511231053182.png">
+    <meta name="theme-color" content="#ff6b6b">
+    <!-- 方正粗圆简体字体引用 -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap">
+    <script src="assets/js/main.js"></script>
+    <script>
+        // 设置首页导航项的选中状态
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.mycubs-navbar .navbar-item a');
+            
+            navLinks.forEach(link => {
+                const linkPath = link.getAttribute('href');
+                const currentPage = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'index.html';
+                
+                if (linkPath === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</head>
+<body class="home-page">
+    <!-- 背景视频与fallback图片 -->
+    <div class="background-container">
+        <!-- fallback图片 -->
+        <img src="#" alt="背景图片" class="main-image">
+        <!-- 背景视频 -->
+        <video class="main-video" autoplay loop muted playsinline>
+            <source src="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/copy_F69E28C6-5127-435D-9F34-DF7D7A48303C.MOV" type="video/mp4">
+        </video>
+    </div>
+    
+    <!-- 内容容器：包含文本和导航栏 -->
+    <div class="content-container">
+        <!-- 左侧内容区域：包含文本和导航栏，确保左对齐 -->
+        <div class="left-aligned-content">
+            <!-- 左侧大型白色粗体文本 -->
+            <div class="hero-text">
+                <h1>CRYPTO</h1>
+                <h1>CUBS</h1>
+            </div>
+            
+            <!-- 左对齐导航栏 -->
+            <nav class="mycubs-navbar">
+                <div class="navbar-items">
+                    <div class="navbar-item">
+                        <a href="index.html">Index </a>
+                    </div>
+                    <div class="navbar-item">
+                        <a href="portfolio.html">Portfolio </a>
+                    </div>
+                    <div class="navbar-item">
+                        <a href="about.html">About Me </a>
+                    </div>
+                    <div class="email-button">
+                        <a href="#" id="copyEmail" onclick="copyEmail()">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="currentColor"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M112 128C85.5 128 64 149.5 64 176C64 191.1 71.1 205.3 83.2 214.4L291.2 370.4C308.3 383.2 331.7 383.2 348.8 370.4L556.8 214.4C568.9 205.3 576 191.1 576 176C576 149.5 554.5 128 528 128L112 128zM64 260L64 448C64 483.3 92.7 512 128 512L512 512C547.3 512 576 483.3 576 448L576 260L377.6 408.8C343.5 434.4 296.5 434.4 262.4 408.8L64 260z"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+</body>
+</html>

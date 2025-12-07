@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>笔记页面</title>
+    <link rel="stylesheet" href="assets/css/style.css?v=1.0">
+    <!-- 引入marked.js库 -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/14.0.0/marked.min.js"></script> -->
+    <script src="assets/js/marked.min.js"></script>
+    
+    <!-- 网站图标 -->
+    <link rel="icon" type="image/svg+xml" href="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511231053182.png">
+    <link rel="shortcut icon" href="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511231053182.png">
+    <meta name="theme-color" content="#ff6b6b">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        /* 表格样式 */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            border: 1px solid #ddd;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+
+
+
+        /* 主内容区 */
+        .main-container {
+            display: flex;
+            margin-top: 90px;
+            height: calc(100vh - 80px); /* 减去导航栏高度，占满剩余视口高度 */
+            overflow: hidden; /* 主内容区不可滑动 */
+        }
+
+        /* 左侧目录 */
+        .sidebar {
+            width: 300px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow-y: auto; /* 文件目录可单独滑动 */
+            padding: 20px 0;
+            margin-right: 10px;
+            height: 100%; /* 高度100%，自适应main-container */
+            transition: width 0.3s ease;
+            position: relative;
+        }
+
+        /* 折叠状态的侧边栏 */
+        .sidebar.collapsed {
+            width: 40px;
+            margin-right: 0;
+        }
+
+        .sidebar-header {
+            padding: 0 60px 16px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e293b;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 16px;
+            position: relative;
+            transition: opacity 0.3s ease;
+        }
+
+        /* 折叠状态下隐藏标题文字 */
+        .sidebar.collapsed .sidebar-header {
+            opacity: 0;
+            padding-right: 0;
+        }
+
+        /* 折叠展开按钮样式 */
+        .toggle-btn {
+            position: absolute;
+            top: 10px;
+            
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+            cursor: pointer;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .toggle-btn:hover {
+            background-color: #f1f5f9;
+            color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 折叠状态下隐藏文件列表 */
+        .sidebar.collapsed .toc-tree {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* 主容器需要相对定位以容纳绝对定位的按钮 */
+        .main-container {
+            position: relative;
+        }
+
+        /* 主容器调整 */
+        .main-container {
+            display: flex;
+            margin-top: 90px;
+            height: calc(100vh - 80px); /* 减去导航栏高度，占满剩余视口高度 */
+            overflow: hidden; /* 主内容区不可滑动 */
+            transition: all 0.3s ease;
+        }
+
+        /* 目录树 */
+        .toc-tree {
+            list-style: none;
+        }
+
+        .toc-item {
+            margin-bottom: 4px;
+        }
+
+        .toc-link {
+            display: block;
+            padding: 8px 20px;
+            color: #475569;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .toc-link:hover {
+            background-color: #f1f5f9;
+            color: #3b82f6;
+        }
+
+        .toc-link.active {
+            background-color: #e0f2fe;
+            color: #0284c7;
+            font-weight: 500;
+        }
+
+        /* 子目录 */
+        .toc-children {
+            list-style: none;
+            margin-left: 16px;
+            display: block;
+        }
+
+        .toc-item.collapsed > .toc-children {
+            display: none;
+        }
+
+        .toc-expand {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            text-align: center;
+            font-size: 12px;
+            line-height: 16px;
+            color: #94a3b8;
+            cursor: pointer;
+        }
+
+        /* 中间正文和右侧目录容器 */
+        .content-container {
+            flex: 1;
+            display: flex;
+            
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            height: 100%; /* 高度100%，自适应main-container */
+            transition: all 0.3s ease;
+        }
+
+        /* 侧边栏折叠时，内容容器占据更多空间 */
+        .sidebar.collapsed + .content-container {
+            border-radius: 8px 8px 8px 8px;
+        }
+
+        /* 中间正文 */
+        .content {
+            flex: 2;
+            overflow-y: auto; /* 内容区域可单独滑动 */
+            padding: 32px 64px;
+            height: 100%; /* 高度100%，自适应content-container */
+        }
+
+        /* 右侧内容目录 */
+        .content-sidebar {
+            width: 300px;
+            background-color: #f8fafc;
+            border-left: 1px solid #e2e8f0;
+            overflow-y: auto; /* 内容目录可单独滑动 */
+            padding: 20px 0;
+            height: 100%; /* 高度100%，自适应content-container */
+        }
+
+        .content-sidebar-header {
+            padding: 0 20px 16px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 16px;
+        }
+
+        .content-toc {
+            list-style: none;
+        }
+
+        .content-toc-item {
+            margin-bottom: 4px;
+        }
+
+        .content-toc-link {
+            display: block;
+            padding: 8px 20px;
+            color: #475569;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .content-toc-link:hover {
+            background-color: #f1f5f9;
+            color: #3b82f6;
+        }
+
+        .content-toc-link.active {
+            background-color: #e0f2fe;
+            color: #0284c7;
+            font-weight: 500;
+        }
+
+        .content-toc-children {
+            list-style: none;
+            margin-left: 16px;
+            display: block;
+        }
+
+        /* 正文样式 */
+        .content h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .content h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-top: 32px;
+            margin-bottom: 16px;
+        }
+
+        .content p {
+            margin-bottom: 16px;
+            color: #475569;
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        /* 代码块样式 */
+        .code-block,
+        pre {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 16px;
+            margin: 16px 0;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #334155;
+        }
+        
+        code {
+            background-color: #f1f5f9;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+        }
+        
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        /* 引用样式 */
+        .quote {
+            border-left: 4px solid #3b82f6;
+            padding-left: 16px;
+            margin: 16px 0;
+            color: #64748b;
+            font-style: italic;
+        }
+
+        /* 列表样式 */
+        .content ul,
+        .content ol {
+            margin: 16px 0;
+            padding-left: 24px;
+            color: #475569;
+        }
+
+        .content li {
+            margin-bottom: 8px;
+        }
+
+        /* 标签样式 */
+        .tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .tag {
+            padding: 4px 12px;
+            background-color: #f1f5f9;
+            color: #64748b;
+            font-size: 12px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        /* 页脚信息 */
+        .footer-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: 200px;
+            }
+
+            .content {
+                margin: 0;
+                padding: 20px;
+                border-radius: 0;
+            }
+        }
+
+        /* 管理按钮样式 */
+        .admin-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-btn:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.5);
+        }
+
+        /* 后台管理模态框样式 */
+        .admin-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .admin-modal.active {
+            display: block;
+        }
+
+        .admin-modal-content {
+            background-color: white;
+            margin: 2% auto;
+            border-radius: 12px;
+            width: 90%;
+            height: 90%;
+            max-width: 1400px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-modal-header {
+            background-color: #f8fafc;
+            padding: 20px 32px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-modal-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .admin-modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            font-weight: bold;
+            color: #64748b;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .admin-modal-close:hover {
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .admin-modal-body {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* 通用输入模态框样式 */
+        .input-modal-content {
+            max-width: 500px;
+            width: 90%;
+            height: auto;
+            margin: 10% auto;
+        }
+
+        .input-container {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-container label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .input-modal-input {
+            padding: 12px 16px;
+            font-size: 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .input-modal-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .admin-btn.cancel {
+            background-color: #f1f5f9;
+            color: #64748b;
+        }
+
+        .admin-btn.cancel:hover {
+            background-color: #e2e8f0;
+        }
+
+        /* 管理界面布局 */
+        .admin-layout {
+            display: flex;
+            height: 100%;
+        }
+
+        /* 左侧文件目录 */
+        .admin-sidebar {
+            width: 350px;
+            background-color: #f8fafc;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-sidebar-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        /* 操作按钮样式 */
+        .admin-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .admin-btn-small {
+            background-color: #f1f5f9;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .admin-btn-small:hover {
+            background-color: #e2e8f0;
+        }
+
+        .admin-btn-small:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .admin-btn-danger {
+            background-color: #fee2e2;
+            color: #dc2626;
+            border-color: #fecaca;
+        }
+
+        .admin-btn-danger:hover {
+            background-color: #fecaca;
+        }
+
+        /* 文件树样式 */
+        .admin-file-tree {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .file-tree-item {
+            margin-bottom: 4px;
+        }
+
+        .file-tree-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #475569;
+            transition: all 0.2s ease;
+        }
+
+        .file-tree-link:hover {
+            background-color: #e2e8f0;
+        }
+
+        .file-tree-link.active {
+            background-color: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .file-tree-children {
+            margin-left: 20px;
+            list-style: none;
+            padding: 0;
+        }
+
+        /* 右侧编辑器 */
+        .admin-editor {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-editor-header {
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        #file-name {
+            width: 300px;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #334155;
+        }
+
+        #file-name:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        #file-name:disabled {
+            background-color: #f8fafc;
+            cursor: not-allowed;
+        }
+
+        /* 编辑器内容区域 */
+        .admin-editor-content {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        #file-content {
+            width: 100%;
+            height: 100%;
+            border: none;
+            outline: none;
+            padding: 20px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #334155;
+            resize: none;
+        }
+
+        #file-content:focus {
+            box-shadow: inset 0 0 0 1px #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <!-- 引用外部导航栏 -->
+    <div id="navbar-container"></div>
+
+    <!-- 主内容区 -->
+    <div class="main-container">
+        <!-- 折叠展开按钮 -->
+        <button class="toggle-btn" id="toggle-sidebar"><svg t="1764731982911" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5578" width="24" height="24"><path d="M876 840c19.882 0 36 16.118 36 36s-16.118 36-36 36H148c-19.882 0-36-16.118-36-36s16.118-36 36-36h728z m0-243c19.882 0 36 16.118 36 36s-16.118 36-36 36H440c-19.882 0-36-16.118-36-36s16.118-36 36-36h436zM320.752 363.41a8 8 0 0 1 8 8v281.18a8 8 0 0 1-12.603 6.544l-199.848-140.59a8 8 0 0 1 0-13.087l199.848-140.59a8 8 0 0 1 4.603-1.458zM876 355c19.882 0 36 16.118 36 36s-16.118 36-36 36H440c-19.882 0-36-16.118-36-36s16.118-36 36-36h436z m0-243c19.882 0 36 16.118 36 36s-16.118 36-36 36H148c-19.882 0-36-16.118-36-36s16.118-36 36-36h728z" fill="#64748b" p-id="5579"></path></svg></button>
+        <!-- 左侧目录 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                学习笔记
+            </div>
+            <ul class="toc-tree" id="toc-tree">
+                <li class="toc-item">
+                    <!-- <a href="#" class="toc-link">
+                        <span class="toc-expand">▶</span>
+                        📁 notes
+                    </a> -->
+                    <ul class="toc-children" id="notes-file-list">
+                        <!-- 动态生成文件列表 -->
+                    </ul>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- 中间正文和右侧目录容器 -->
+        <div class="content-container">
+            <!-- 中间正文 -->
+            <main class="content">
+                <div id="notes-content">
+                    <h1>选择一个文档查看</h1>
+                    <p>请从左侧文件目录中选择一个文档查看内容。</p>
+                </div>
+            </main>
+
+            <!-- 右侧内容目录 -->
+            <aside class="content-sidebar">
+                <!-- <div class="content-sidebar-header">内容目录</div> -->
+                <ul class="content-toc">
+                    <li class="content-toc-item">
+                        <a href="#section1" class="content-toc-link">1. 基础知识</a>
+                        <ul class="content-toc-children">
+                            <li class="content-toc-item">
+                                <a href="#section1-1" class="content-toc-link">1.1 什么是Prompt</a>
+                            </li>
+                            <li class="content-toc-item">
+                                <a href="#section1-2" class="content-toc-link">1.2 Prompt的基本结构</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="content-toc-item">
+                        <a href="#section2" class="content-toc-link">2. 简单应用</a>
+                        <ul class="content-toc-children">
+                            <li class="content-toc-item">
+                                <a href="#section2-1" class="content-toc-link">2.1 日常交流中的Prompt</a>
+                            </li>
+                            <li class="content-toc-item">
+                                <a href="#section2-2" class="content-toc-link">2.2 工作中的Prompt</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="content-toc-item">
+                        <a href="#section3" class="content-toc-link">3. 中级提升</a>
+                        <ul class="content-toc-children">
+                            <li class="content-toc-item">
+                                <a href="#section3-1" class="content-toc-link">3.1 提示词技巧</a>
+                            </li>
+                            <li class="content-toc-item">
+                                <a href="#section3-2" class="content-toc-link">3.2 上下文构建</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="content-toc-item">
+                        <a href="#section4" class="content-toc-link">4. 高级技巧</a>
+                        <ul class="content-toc-children">
+                            <li class="content-toc-item">
+                                <a href="#section4-1" class="content-toc-link">4.1 链式Prompt</a>
+                            </li>
+                            <li class="content-toc-item">
+                                <a href="#section4-2" class="content-toc-link">4.2 少样本学习</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </aside>
+        </div>
+    </div>
+
+    <!-- 管理按钮 -->
+    <button class="admin-btn" id="admin-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+        管理
+    </button>
+
+    <!-- 通用输入模态框 -->
+    <div class="admin-modal" id="input-modal">
+        <div class="admin-modal-content input-modal-content">
+            <div class="admin-modal-header">
+                <h2 id="input-modal-title">输入信息</h2>
+                <button class="admin-modal-close" id="input-modal-close">&times;</button>
+            </div>
+            <div class="admin-modal-body">
+                <div class="input-container">
+                    <label id="input-modal-label" for="input-modal-value">请输入:</label>
+                    <input type="text" id="input-modal-value" placeholder="输入内容" class="input-modal-input">
+                    <div class="input-actions">
+                        <button class="admin-btn" id="input-modal-confirm">确认</button>
+                        <button class="admin-btn cancel" id="input-modal-cancel">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 后台管理模态框 -->
+    <div class="admin-modal" id="admin-modal">
+        <div class="admin-modal-content">
+            <div class="admin-modal-header">
+                <h2>Markdown 文件管理</h2>
+                <button class="admin-modal-close" id="admin-modal-close">&times;</button>
+            </div>
+            <div class="admin-modal-body">
+                <div class="admin-layout">
+                    <!-- 左侧文件目录 -->
+                    <div class="admin-sidebar">
+                        <div class="admin-sidebar-header">
+                            <h3>文件目录</h3>
+                            <div class="admin-actions">
+                                <button class="admin-btn-small" id="new-dir-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5"></path><polyline points="15 15 20 10 15 5"></polyline><line x1="12" x2="20" y1="15" y2="15"></line></svg>
+                                    新建目录
+                                </button>
+                                <button class="admin-btn-small" id="new-file-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                                    新建文件
+                                </button>
+                            </div>
+                        </div>
+                        <div class="admin-file-tree" id="admin-file-tree">
+                            <!-- 动态生成文件树 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 右侧编辑器 -->
+                    <div class="admin-editor">
+                        <div class="admin-editor-header">
+                            <div class="file-info">
+                                <input type="text" id="file-name" placeholder="文件名.md" disabled>
+                                <input type="number" id="file-sort" placeholder="排序值" disabled min="0" style="width: 100px; margin-left: 10px;">
+                            </div>
+                            <div class="admin-actions">
+                                <button class="admin-btn-small" id="save-file-btn" disabled>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                                    保存
+                                </button>
+                                <button class="admin-btn-small admin-btn-danger" id="delete-btn" disabled>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg>
+                                    删除
+                                </button>
+                            </div>
+                        </div>
+                        <div class="admin-editor-content">
+                            <textarea id="file-content" placeholder="请选择一个文件进行编辑，或创建新文件..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 加载外部导航栏
+        fetch('assets/components/navbar.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('navbar-container').innerHTML = data;
+                
+                // 导航栏加载完成后，设置当前页面的导航项选中状态
+                const currentPath = window.location.pathname;
+                const navLinks = document.querySelectorAll('.navbar-menu a');
+                
+                navLinks.forEach(link => {
+                    // 跳过邮箱和微信图标链接
+                    if (link.closest('.email-icon-wrapper') || link.closest('.wechat-icon-wrapper')) {
+                        return;
+                    }
+                    
+                    const linkPath = link.getAttribute('href');
+                    const currentPage = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'index.html';
+                    
+                    if (linkPath === currentPage) {
+                        link.classList.add('active');
+                    }
+                });
+                
+                // 导航栏加载完成后，执行页面初始化逻辑
+                initPage();
+            })
+            .catch(error => {
+                console.error('Failed to load navbar:', error);
+                // 即使导航栏加载失败，也要尝试初始化页面
+                initPage();
+            });
+        
+        // 动态生成左侧文件目录
+        async function generateFileList() {
+            try {
+                // 文件名到中文名称的映射表
+                const fileNameToChineseMap = {
+                    'file_8aa903e409.md': 'AI基础概念',
+                    'file_a10ec60f7c.md': '机器学习算法',
+                    'file_a2f83d96f9.md': '深度学习原理',
+                    'file_b423c01193.md': '神经网络架构',
+                    'file_c7d5693821.md': '自然语言处理',
+                    'file_d3f6e9a2b4.md': '计算机视觉',
+                    'file_e5g7h2j4k9.md': '强化学习',
+                    'file_f8i9j3k7l2.md': '数据预处理',
+                    'file_g4k2m7n9p1.md': '模型评估与优化',
+                    'file_h6q3r8s2t4.md': 'AI伦理与安全',
+                    'file_i1u2v6w8x3.md': '大语言模型',
+                    'file_j9y4z7a3b5.md': 'AI应用案例',
+                    'file_k2c7d4e1f9.md': '联邦学习',
+                    'file_l8g3h5i9j2.md': 'AutoML',
+                    'file_m4n6o8p2q1.md': '知识图谱',
+                    'file_n9r2s4t7u5.md': '生成式AI',
+                    'file_o3v5w8x1y9.md': 'AI研究趋势',
+                    'file_p7a2b9c4d6.md': 'AI编程实践',
+                    'file_q1e5f9g3h7.md': 'AI系统部署',
+                    'file_r4t8u2v6w9.md': 'AI与大数据',
+                    'file_s2d6e1f9g3.md': 'AI与云计算',
+                    'file_t9h3i5j7k2.md': 'AI与物联网',
+                    'file_u5k8l2m9n4.md': 'AI与区块链',
+                    'file_v3p6q9r2s4.md': 'AI与机器人',
+                    'file_w8x1y4z7a9.md': 'AI未来展望'
+                };
+                
+                // 从后端API获取云端文件列表
+                const response = await fetch('http://localhost:8001/api/files/index');
+                if (!response.ok) {
+                    throw new Error(`API请求失败: ${response.status}`);
+                }
+                const data = await response.json();
+                
+                // 从API响应中获取文件列表
+                let fileList = data.files;
+                
+                // 确保所有文件都有正确的中文显示名称
+                fileList = fileList.map(file => {
+                    // 如果数据库中没有display_name或display_name与文件名相同，则使用映射表
+                    if (!file.display_name || file.display_name === file.name) {
+                        file.display_name = fileNameToChineseMap[file.name] || file.name;
+                    }
+                    if (!file.title || file.title === file.name.replace('.md', '')) {
+                        file.title = fileNameToChineseMap[file.name] || file.name.replace('.md', '');
+                    }
+                    return file;
+                });
+                
+                // 按sort_order字段排序文件列表，确保排序正确
+                fileList.sort((a, b) => {
+                    const sortOrderA = a.sort_order || 0;
+                    const sortOrderB = b.sort_order || 0;
+                    return sortOrderA - sortOrderB;
+                });
+                
+                // 保存到全局变量
+                globalFileList = fileList;
+                
+                // 生成文件列表HTML
+                const fileListContainer = document.getElementById('notes-file-list');
+                fileListContainer.innerHTML = '';
+                
+                fileList.forEach(file => {
+                    const li = document.createElement('li');
+                    li.className = 'toc-item';
+                    
+                    const a = document.createElement('a');
+                    a.className = 'toc-link';
+                    a.href = `#${file.name}`;
+                    a.innerHTML = `📄 ${file.display_name}`;
+                    
+                    // 添加点击事件
+                    a.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        loadMarkdownFile(file.name);
+                        
+                        // 更新活动状态
+                        document.querySelectorAll('.toc-link').forEach(l => l.classList.remove('active'));
+                        this.classList.add('active');
+                    });
+                    
+                    li.appendChild(a);
+                    fileListContainer.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Failed to generate file list:', error);
+                const fileListContainer = document.getElementById('notes-file-list');
+                fileListContainer.innerHTML = '<li class="toc-item"><span class="toc-link">无法加载文件列表</span></li>';
+            }
+        }
+        
+        // 目录折叠功能
+        document.querySelectorAll('.toc-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // 处理折叠/展开
+                const tocItem = this.parentElement;
+                const children = tocItem.querySelector('.toc-children');
+                const expandIcon = this.querySelector('.toc-expand');
+                
+                if (children) {
+                    tocItem.classList.toggle('collapsed');
+                    if (expandIcon) {
+                        expandIcon.textContent = tocItem.classList.contains('collapsed') ? '▶' : '▼';
+                    }
+                }
+            });
+        });
+        
+        // 定义SVG图标
+        const svgExpand = '<svg t="1764731982911" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5578" width="24" height="24"><path d="M876 840c19.882 0 36 16.118 36 36s-16.118 36-36 36H148c-19.882 0-36-16.118-36-36s16.118-36 36-36h728z m0-243c19.882 0 36 16.118 36 36s-16.118 36-36 36H440c-19.882 0-36-16.118-36-36s16.118-36 36-36h436zM320.752 363.41a8 8 0 0 1 8 8v281.18a8 8 0 0 1-12.603 6.544l-199.848-140.59a8 8 0 0 1 0-13.087l199.848-140.59a8 8 0 0 1 4.603-1.458zM876 355c19.882 0 36 16.118 36 36s-16.118 36-36 36H440c-19.882 0-36-16.118-36-36s16.118-36 36-36h436z m0-243c19.882 0 36 16.118 36 36s-16.118 36-36 36H148c-19.882 0-36-16.118-36-36s16.118-36 36-36h728z" fill="#64748b" p-id="5579"></path></svg>';
+        
+        // 侧边栏整体折叠展开功能
+        const toggleBtn = document.getElementById('toggle-sidebar');
+        const sidebar = document.querySelector('.sidebar');
+        const mainContainer = document.querySelector('.main-container');
+        
+        if (toggleBtn && sidebar) {
+            toggleBtn.addEventListener('click', function() {
+                // 切换侧边栏折叠状态
+                sidebar.classList.toggle('collapsed');
+            });
+        }
+        
+        // 加载Markdown文件，优先使用URL参数
+        async function loadMarkdownFile(fileName) {
+            try {
+                // 只从后端API加载文件
+                const apiResponse = await fetch(`http://localhost:8001/api/files/${encodeURIComponent(fileName)}`);
+                if (apiResponse.ok) {
+                    const data = await apiResponse.json();
+                    content = data.content;
+                } else {
+                    throw new Error(`从API获取文件失败: ${apiResponse.status}`);
+                }
+                
+                // 使用marked.js库处理Markdown
+                let html = marked.parse(content);
+                
+                // 更新正文内容
+                document.getElementById('notes-content').innerHTML = html;
+                
+                // 生成内容目录
+                generateContentTOC();
+            } catch (error) {
+                console.error('Failed to load markdown file:', error);
+                document.getElementById('notes-content').innerHTML = `
+                    <h1>错误</h1>
+                    <p>无法加载文档：${error.message}</p>
+                `;
+            }
+        }
+
+        // 渲染Markdown内容
+        function renderMarkdown(markdownText) {
+            // 使用marked.js库处理Markdown
+            let html = marked.parse(markdownText);
+            
+            // 更新正文内容
+            document.getElementById('notes-content').innerHTML = html;
+            
+            // 生成内容目录
+            generateContentTOC();
+        }
+        
+        // 生成内容目录
+        function generateContentTOC() {
+            const content = document.querySelector('.content');
+            const headings = content.querySelectorAll('h1, h2, h3, h4, h5, h6');
+            const contentTOC = document.querySelector('.content-toc');
+            
+            // 清空现有目录
+            contentTOC.innerHTML = '';
+            
+            // 如果没有标题，不显示目录
+            if (headings.length === 0) {
+                return;
+            }
+            
+            // 显示内容目录标题（添加null检查）
+            const sidebarHeader = document.querySelector('.content-sidebar-header');
+            if (sidebarHeader) {
+                sidebarHeader.style.display = 'block';
+            }
+            
+            // 创建目录结构
+            const tocHierarchy = [contentTOC]; // 初始层级为根目录
+            let currentLevel = 1; // 初始级别为1
+            
+            headings.forEach(heading => {
+                const level = parseInt(heading.tagName.charAt(1));
+                const title = heading.textContent;
+                const id = heading.id;
+                
+                // 创建目录项
+                const tocItem = document.createElement('li');
+                tocItem.className = 'content-toc-item';
+                
+                const tocLink = document.createElement('a');
+                tocLink.className = 'content-toc-link';
+                tocLink.href = `#${id}`;
+                tocLink.textContent = title;
+                
+                // 添加点击事件
+                tocLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    heading.scrollIntoView({ behavior: 'smooth' });
+                });
+                
+                tocItem.appendChild(tocLink);
+                
+                // 处理层级关系
+                if (level > currentLevel) {
+                    // 向下嵌套，为当前最后一个项目创建子ul
+                    for (let i = currentLevel; i < level; i++) {
+                        const nestedUL = document.createElement('ul');
+                        nestedUL.className = 'content-toc-children';
+                        
+                        // 获取当前层级的最后一个li元素
+                        const lastLi = tocHierarchy[tocHierarchy.length - 1].lastElementChild;
+                        if (lastLi) {
+                            lastLi.appendChild(nestedUL);
+                            tocHierarchy.push(nestedUL);
+                        }
+                    }
+                } else if (level < currentLevel) {
+                    // 向上回退，调整层级栈
+                    tocHierarchy.splice(level, tocHierarchy.length - level);
+                }
+                
+                // 添加到当前层级的ul中
+                tocHierarchy[tocHierarchy.length - 1].appendChild(tocItem);
+                
+                currentLevel = level;
+            });
+            
+            // 清理空的ul
+            contentTOC.querySelectorAll('.content-toc-children').forEach(ul => {
+                if (ul.children.length === 0) {
+                    ul.remove();
+                }
+            });
+        }
+
+        // 全局变量保存文件列表
+        let globalFileList = [];
+        
+        // 页面初始化函数
+        async function initPage() {
+            try {
+                // 生成左侧文件列表
+                await generateFileList();
+                
+                // 加载Markdown文件，优先使用URL参数
+                const urlParams = new URLSearchParams(window.location.search);
+                let fileName;
+                
+                if (urlParams.get('file')) {
+                    fileName = urlParams.get('file');
+                } else if (globalFileList.length > 0) {
+                    // 如果没有URL参数，使用第一个文件
+                    fileName = globalFileList[0].name;
+                } else {
+                    // 作为备选，使用默认文件
+                    fileName = 'AI大模型知识体系总览.md';
+                }
+                
+                // 加载文件内容
+                await loadMarkdownFile(fileName);
+                
+                // 设置第一个文件为活动状态
+                if (globalFileList.length > 0 && !urlParams.get('file')) {
+                    const firstFileLink = document.querySelector('.toc-link');
+                    if (firstFileLink) {
+                        firstFileLink.classList.add('active');
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to initialize page:', error);
+            }
+        }
+        
+        // 页面加载完成后执行
+        window.addEventListener('DOMContentLoaded', () => {
+            // 这里不再直接调用generateFileList，而是等待导航栏加载完成后在initPage中调用
+        });
+
+        // 后台管理功能
+        (function() {
+            // 后端API基础URL
+            const API_BASE_URL = 'http://localhost:8001/api';
+            
+            // 通用输入模态框控制
+            let currentInputCallback = null;
+            const inputModal = document.getElementById('input-modal');
+            const inputModalTitle = document.getElementById('input-modal-title');
+            const inputModalLabel = document.getElementById('input-modal-label');
+            const inputModalValue = document.getElementById('input-modal-value');
+            const inputModalClose = document.getElementById('input-modal-close');
+            const inputModalConfirm = document.getElementById('input-modal-confirm');
+            const inputModalCancel = document.getElementById('input-modal-cancel');
+            
+            // 自定义prompt函数
+            const customPrompt = (title, label, placeholder, isPassword = false, callback) => {
+                currentInputCallback = callback;
+                inputModalTitle.textContent = title;
+                inputModalLabel.textContent = label;
+                inputModalValue.placeholder = placeholder || '';
+                inputModalValue.type = isPassword ? 'password' : 'text';
+                inputModalValue.value = '';
+                inputModal.classList.add('active');
+                inputModalValue.focus();
+            };
+            
+            // 确认输入
+            const confirmInput = () => {
+                if (currentInputCallback) {
+                    currentInputCallback(inputModalValue.value);
+                }
+                inputModal.classList.remove('active');
+                inputModalValue.value = '';
+            };
+            
+            // 取消输入
+            const cancelInput = () => {
+                if (currentInputCallback) {
+                    currentInputCallback(null);
+                }
+                inputModal.classList.remove('active');
+                inputModalValue.value = '';
+            };
+            
+            // 模态框控制
+            const adminBtn = document.getElementById('admin-btn');
+            const adminModal = document.getElementById('admin-modal');
+            const adminModalClose = document.getElementById('admin-modal-close');
+            
+            if (inputModal && inputModalTitle && inputModalLabel && inputModalValue && inputModalClose && inputModalConfirm && inputModalCancel) {
+                // 确认输入
+                inputModalConfirm.addEventListener('click', confirmInput);
+                
+                // 输入框回车确认
+                inputModalValue.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        confirmInput();
+                    }
+                });
+                
+                // 关闭输入模态框
+                inputModalClose.addEventListener('click', cancelInput);
+                
+                inputModalCancel.addEventListener('click', cancelInput);
+                
+                // 点击输入模态框外部关闭
+                inputModal.addEventListener('click', (e) => {
+                    if (e.target === inputModal) {
+                        cancelInput();
+                    }
+                });
+            }
+            
+            if (adminBtn && adminModal && adminModalClose) {
+                // 打开管理界面（带密码验证）
+                adminBtn.addEventListener('click', () => {
+                    customPrompt('管理员登录', '请输入管理密码:', '输入密码', true, async (password) => {
+                        try {
+                            // 调用后端API验证密码
+                            const response = await fetch('http://localhost:8001/api/admin/auth', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ password })
+                            });
+                            
+                            const result = await response.json();
+                            
+                            if (result.success) {
+                                adminModal.classList.add('active');
+                                // 初始化文件树
+                                initFileTree();
+                            } else {
+                                alert('密码错误，无法进入管理页面');
+                            }
+                        } catch (error) {
+                            console.error('密码验证失败:', error);
+                            alert('密码验证失败，请稍后重试');
+                        }
+                    });
+                });
+                
+                // 关闭管理模态框
+                adminModalClose.addEventListener('click', () => {
+                    adminModal.classList.remove('active');
+                });
+                
+                // 点击管理模态框外部关闭
+                adminModal.addEventListener('click', (e) => {
+                    if (e.target === adminModal) {
+                        adminModal.classList.remove('active');
+                    }
+                });
+            }
+            
+            // 当前选中的文件或目录
+            let currentSelected = null;
+            let currentIsFile = false;
+            
+            // 从API获取文件列表
+            async function getFilesFromAPI() {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/files`);
+                    if (!response.ok) {
+                        throw new Error(`API请求失败: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    return data.files;
+                } catch (error) {
+                    console.error('从API获取文件列表失败:', error);
+                    return [];
+                }
+            }
+            
+            // 从API获取文件索引列表（包含display_name和name）
+            async function getFileIndexesFromAPI() {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/files/index`);
+                    if (!response.ok) {
+                        throw new Error(`API请求失败: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    return data.files;
+                } catch (error) {
+                    console.error('从API获取文件索引列表失败:', error);
+                    return [];
+                }
+            }
+            
+            // 从API获取文件内容
+            async function getFileContentFromAPI(fileName) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/files/${encodeURIComponent(fileName)}`);
+                    if (!response.ok) {
+                        throw new Error(`API请求失败: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    return data.content;
+                } catch (error) {
+                    console.error('从API获取文件内容失败:', error);
+                    return null;
+                }
+            }
+            
+            // 保存文件到API
+            async function saveFileToAPI(fileName, content, title = '', file_path = '', display_name = '', sort_order = 0) {
+                try {
+                    // 如果没有提供标题，使用文件名作为标题
+                    if (!title) {
+                        title = fileName.replace('.md', '');
+                    }
+                    
+                    // 如果没有提供文件路径，使用文件名作为路径
+                    if (!file_path) {
+                        file_path = `notes/${fileName}`;
+                    }
+                    
+                    // 如果没有提供display_name，使用fileName作为display_name
+                    if (!display_name) {
+                        display_name = fileName;
+                    }
+                    
+                    const response = await fetch(`${API_BASE_URL}/files`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ 
+                            name: fileName, 
+                            display_name: display_name,
+                            title: title,
+                            file_path: file_path,
+                            content: content,
+                            sort_order: sort_order
+                        }),
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`API请求失败: ${response.status}`);
+                    }
+                    
+                    return true;
+                } catch (error) {
+                    console.error('保存文件到API失败:', error);
+                    return false;
+                }
+            }
+            
+            // 从API删除文件
+            async function deleteFileFromAPI(fileName) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/files/${encodeURIComponent(fileName)}`, {
+                        method: 'DELETE',
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`API请求失败: ${response.status}`);
+                    }
+                    
+                    return true;
+                } catch (error) {
+                    console.error('从API删除文件失败:', error);
+                    return false;
+                }
+            }
+            
+            // 初始化文件树
+            async function initFileTree() {
+                // 从API获取文件索引列表
+                let fileIndexes = await getFileIndexesFromAPI();
+                
+                // 按sort_order字段排序文件列表，确保排序正确
+                fileIndexes.sort((a, b) => {
+                    const sortOrderA = a.sort_order || 0;
+                    const sortOrderB = b.sort_order || 0;
+                    return sortOrderA - sortOrderB;
+                });
+                
+                const fileTreeContainer = document.getElementById('admin-file-tree');
+                if (fileTreeContainer) {
+                    // 清空现有内容
+                    fileTreeContainer.innerHTML = '';
+                    
+                    // 创建根目录
+                    const rootUl = document.createElement('ul');
+                    rootUl.className = 'file-tree-children';
+                    
+                    // 添加文件
+                    fileIndexes.forEach(file => {
+                        const li = document.createElement('li');
+                        li.className = 'file-tree-item';
+                        
+                        const link = document.createElement('div');
+                        link.className = 'file-tree-link';
+                        
+                        link.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                            <span>${file.display_name}</span>
+                        `;
+                        
+                        // 添加点击事件（传递实际文件名、显示名和排序值）
+                        link.addEventListener('click', () => selectFile(file.name, link, file.display_name, file.sort_order));
+                        
+                        li.appendChild(link);
+                        rootUl.appendChild(li);
+                    });
+                    
+                    fileTreeContainer.appendChild(rootUl);
+                }
+            }
+            
+            // 选择文件
+            async function selectFile(fileName, linkElement, displayName = '', sortOrder = 0) {
+                // 移除其他项的选中状态
+                document.querySelectorAll('.file-tree-link').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // 添加当前项的选中状态
+                linkElement.classList.add('active');
+                
+                // 更新当前选中
+                currentSelected = fileName;
+                currentIsFile = true;
+                
+                // 加载文件内容
+                await loadFileContent(fileName, displayName, sortOrder);
+                
+                // 更新UI状态
+                updateEditorState(true);
+            }
+            
+            // 更新编辑器状态
+            function updateEditorState(hasSelectedFile) {
+                const fileNameInput = document.getElementById('file-name');
+                const sortInput = document.getElementById('file-sort');
+                const saveBtn = document.getElementById('save-file-btn');
+                const deleteBtn = document.getElementById('delete-btn');
+                
+                if (hasSelectedFile) {
+                    fileNameInput.disabled = false;
+                    sortInput.disabled = false;
+                    saveBtn.disabled = false;
+                    deleteBtn.disabled = false;
+                } else {
+                    fileNameInput.disabled = true;
+                    sortInput.disabled = true;
+                    saveBtn.disabled = true;
+                    deleteBtn.disabled = true;
+                }
+            }
+            
+            // 加载文件内容
+            async function loadFileContent(fileName, displayName = '', sortOrder = 0) {
+                try {
+                    // 从API加载文件内容
+                    let content = await getFileContentFromAPI(fileName);
+                    let sortOrderFromAPI = sortOrder;
+                    
+                    // 如果API中没有，则从服务器加载
+                    if (!content) {
+                        const response = await fetch(`assets/notes/${fileName}`);
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        content = await response.text();
+                    } else {
+                        // 尝试从API获取完整文件信息以获取sort_order
+                        try {
+                            const fileIndexes = await getFileIndexesFromAPI();
+                            const file = fileIndexes.find(f => f.name === fileName);
+                            if (file && file.sort_order !== undefined) {
+                                sortOrderFromAPI = file.sort_order;
+                            }
+                        } catch (error) {
+                            console.error('获取文件排序信息失败:', error);
+                        }
+                    }
+                    
+                    // 使用显示名（如果提供），否则使用文件名
+                    const displayNameToUse = displayName || fileName;
+                    
+                    // 更新编辑器
+                    document.getElementById('file-name').value = displayNameToUse;
+                    document.getElementById('file-sort').value = sortOrderFromAPI;
+                    document.getElementById('file-content').value = content;
+                } catch (error) {
+                    console.error('Failed to load file:', error);
+                    alert('加载文件失败: ' + error.message);
+                }
+            }
+            
+            // 新建文件
+            const newFileBtn = document.getElementById('new-file-btn');
+            if (newFileBtn) {
+                newFileBtn.addEventListener('click', () => {
+                    // 移除其他项的选中状态
+                    document.querySelectorAll('.file-tree-link').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    
+                    // 重置编辑器
+                    document.getElementById('file-name').value = '新建文件.md';
+                    document.getElementById('file-sort').value = 0;
+                    document.getElementById('file-content').value = '';
+                    
+                    // 更新当前状态
+                    currentSelected = null;
+                    currentIsFile = true;
+                    
+                    // 更新UI状态
+                    updateEditorState(true);
+                });
+            }
+            
+            // 新建目录
+            const newDirBtn = document.getElementById('new-dir-btn');
+            if (newDirBtn) {
+                newDirBtn.addEventListener('click', () => {
+                    customPrompt('新建目录', '请输入目录名称:', '目录名称', false, (dirName) => {
+                        if (dirName) {
+                            alert('目录创建功能已触发，目录名称: ' + dirName);
+                            // 这里可以添加实际的目录创建逻辑
+                        }
+                    });
+                });
+            }
+            
+            // 保存文件
+            const saveFileBtn = document.getElementById('save-file-btn');
+            if (saveFileBtn) {
+                saveFileBtn.addEventListener('click', async () => {
+                    const displayName = document.getElementById('file-name').value;
+                    const content = document.getElementById('file-content').value;
+                    
+                    // 从显示名生成标题
+                    const title = displayName.replace('.md', '');
+                    
+                    if (!displayName) {
+                        alert('请输入文件名');
+                        return;
+                    }
+                    
+                    // 校验内容是否为空
+                    if (!content.trim()) {
+                        alert('文件内容不能为空');
+                        return;
+                    }
+                    
+                    // 获取排序值
+                    const sortOrder = parseInt(document.getElementById('file-sort').value) || 0;
+                    
+                    // 保存文件到API，传递当前选中的文件名（currentSelected）
+                    const success = await saveFileToAPI(currentSelected, content, title, '', displayName, sortOrder);
+                    
+                    if (success) {
+                        // 显示成功消息
+                        alert('文件已保存到云端: ' + displayName);
+                        
+                        // 更新文件树
+                        await initFileTree();
+                    } else {
+                        alert('保存失败，请重试');
+                    }
+                });
+            }
+            
+            // 删除文件
+            const deleteBtn = document.getElementById('delete-btn');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', async () => {
+                    if (!currentSelected) {
+                        alert('请选择要删除的文件或目录');
+                        return;
+                    }
+                    
+                    if (confirm(`确定要删除 "${currentSelected}" 吗？`)) {
+                        // 从API中删除文件
+                        const success = await deleteFileFromAPI(currentSelected);
+                        
+                        if (success) {
+                            // 更新文件树
+                            await initFileTree();
+                            
+                            // 重置编辑器
+                    document.getElementById('file-name').value = '';
+                    document.getElementById('file-sort').value = '';
+                    document.getElementById('file-content').value = '';
+                            
+                            // 重置状态
+                            currentSelected = null;
+                            currentIsFile = false;
+                            
+                            // 更新UI状态
+                            updateEditorState(false);
+                            
+                            // 显示成功消息
+                            alert('文件已从云端删除: ' + currentSelected);
+                        } else {
+                            alert('删除失败，请重试');
+                        }
+                    }
+                });
+            }
+        })();
+    </script>
+</body>
+</html>
