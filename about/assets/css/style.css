@@ -5,6 +5,22 @@
     box-sizing: border-box;
 }
 
+/* Markdown 图片响应式样式 */
+#notes-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1em 0;
+}
+
+/* Markdown 图片响应式样式 */
+#notes-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1em 0;
+}
+
 /* 内容容器样式 */
 .content-container {
     position: relative;
@@ -431,7 +447,7 @@ body {
     background-color: rgba(255, 255, 255, 0.98);
     box-shadow: var(--shadow-soft);
     z-index: 1000;
-    padding: 20px 0;
+    /* padding: 20px 0; */
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
 }
@@ -459,7 +475,7 @@ body {
 }
 
 .navbar-menu li {
-    margin-left: 32px;
+    margin-left: 0;
     position: relative;
 }
 

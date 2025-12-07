@@ -51,7 +51,7 @@
         
         /* 客户案例样式 */
         .case-study-section {
-            background: #272e3b;
+            background: #4489f6;
             color: white;
             padding: 4rem 0;
             position: relative;
@@ -77,7 +77,7 @@
             content: '';
             width: 100%;
             height: 100%;
-            background: linear-gradient(180deg, #272e3b, rgba(39, 46, 59, 0));
+            background: linear-gradient(180deg, #265cf1, #4488f600);
             position: absolute;
             top: 0;
             left: 0;
@@ -125,7 +125,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #4e5969;
+            background-color: #E8F3FF;
             border-radius: 8px 0 0 8px;
         }
 
@@ -450,50 +450,118 @@
         }
         
         .skills-cards-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            flex-wrap: wrap;
         }
         
         .skill-card {
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            padding: 24px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-            border: 1px solid #f0f0f0;
+            text-align: left;
+            flex: 0 0 calc(25% - 23px); /* 固定宽度，考虑4个卡片间的3个30px间距 */
+            min-width: 180px;
+            padding: 20px;
+            /* background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); */
         }
         
-        .skill-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-            border-color: #e0e0e0;
+        /* 蓝色编号样式 - 只显示上半部分 */
+        .skill-number {
+            font-size: 102px;
+            font-weight: 800;
+            color: #3B71FE;
+            
+            position: relative;
+            display: inline-block;
+            line-height: 0.8; /* 调整行高，使数字只显示上半部分 */
+            height: 55px; /* 设置固定高度，大约为字体大小的一半 */
+            overflow: hidden; /* 隐藏超出部分 */
+            vertical-align: top; /* 确保对齐正确 */
+        }
+        
+        /* 中文标题 */
+        .skill-title {
+            font-size: 24px;
+            font-weight: 1000;
+            color: #333;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+        
+        /* 英文标题 */
+        .skill-english {
+            font-size: 14px;
+            color: #c7c7c7;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+        
+        /* 底部信息 */
+        .skill-footer {
+            text-align: left;
+        }
+        
+        .skill-provider {
+            font-size: 20px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .skill-code {
+            font-size: 20px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 5px;
         }
         
         .skill-category {
-            font-size: 1.1rem;
+            font-size: 20px;
             font-weight: 600;
-            color: #5688ef;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            color: #666;
+            margin-bottom: 5px;
         }
         
-        .skill-category svg {
-            flex-shrink: 0;
-            opacity: 0.9;
+        /* 新增的第四行文本 */
+        .skill-extra {
+            font-size: 20px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 15px;
         }
         
-        .skill-category span {
-            flex: 1;
+        /* 第四个卡片的特殊样式 */
+        .skill-card:nth-child(4) .skill-number {
+            position: relative;
         }
         
-        .skill-items {
-            color: #555;
-            line-height: 1.6;
+        .skill-card:nth-child(4) .skill-number::after {
+            content: "";
+            position: absolute;
+            bottom: 5px;
+            right: -10px;
+            width: 30px;
+            height: 1px;
+            background-color: #1a73e8;
+        }
+        
+
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .skills-cards-container {
+                flex-direction: column;
+                gap: 30px;
+            }
+            
+            .skill-number {
+                font-size: 50px;
+            }
         }
         
         /* 生活与热爱样式 */
@@ -944,23 +1012,18 @@
             .then(data => {
                 document.getElementById('navbar-container').innerHTML = data;
                 
-                // 导航栏加载完成后，设置当前页面的导航项选中状态
-                const currentPath = window.location.pathname;
-                const navLinks = document.querySelectorAll('.navbar-menu a');
+                // 导航栏加载完成后，调用main.js中定义的导航初始化函数
+                initNavigation();
                 
-                navLinks.forEach(link => {
-                    // 跳过邮箱和微信图标链接
-                    if (link.closest('.email-icon-wrapper') || link.closest('.wechat-icon-wrapper')) {
-                        return;
-                    }
-                    
-                    const linkPath = link.getAttribute('href');
-                    const currentPage = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'index.html';
-                    
-                    if (linkPath === currentPage) {
-                        link.classList.add('active');
-                    }
-                });
+                // 为邮箱按钮重新绑定复制事件
+                const emailIcon = document.querySelector('.email-icon');
+                if (emailIcon) {
+                    emailIcon.onclick = function(e) {
+                        e.preventDefault();
+                        copyEmail();
+                        return false;
+                    };
+                }
             })
             .catch(error => {
                 console.error('加载导航栏失败:', error);
@@ -1080,45 +1143,55 @@
     <!-- 能力武器库 -->
     <section class="skills-arsenal">
         <div class="container">
-            <h2 class="section-title">我的能力武器库</h2>
+            
             <div class="skills-container">
                 
                 <div class="skills-cards-container">
                     <div class="skill-card">
-                        <div class="skill-category">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                            <span>产品与战略</span>
+                        <div class="skill-number">01</div>
+                        <div class="skill-title"><strong>产品与战略</strong></div>
+                        <div class="skill-english">Product & Strategy</div>
+                        <div class="skill-footer">
+                            <div class="skill-provider">产品思维</div>
+                            <div class="skill-code">需求分析</div>
+                            <div class="skill-category">原型设计</div>
+                            <div class="skill-extra">项目管理</div>
                         </div>
-                        <div class="skill-items">产品思维、需求分析、原型设计、项目管理</div>
                     </div>
                     <div class="skill-card">
-                        <div class="skill-category">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                            <span>设计与表达</span>
+                        <div class="skill-number">02</div>
+                        <div class="skill-title">设计与表达</div>
+                        <div class="skill-english">Design & Expression</div>
+                        <div class="skill-footer">
+                            <div class="skill-provider">UI/UX设计</div>
+                            <div class="skill-code">平面设计</div>
+                            <div class="skill-category">插画设计</div>
+                            <div class="skill-extra">Logo设计</div>
                         </div>
-                        <div class="skill-items">UI/UX设计、平面设计、插画、Logo设计、3D建模、Word/PPT/Excel</div>
                     </div>
                     <div class="skill-card">
-                        <div class="skill-category">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="16" x="3" y="4" rx="2"></rect><path d="M7 22h10"></path></svg>
-                            <span>技术与实现</span>
+                        <div class="skill-number">03</div>
+                        <div class="skill-title">技术与实现</div>
+                        <div class="skill-english">Technology & Implementation</div>
+                        <div class="skill-footer">
+                            <div class="skill-provider">前端开发</div>
+                            <div class="skill-code">Python基础</div>
+                            <div class="skill-category">AI工具</div>
+                            <div class="skill-extra">动手制作</div>
                         </div>
-                        <div class="skill-items">前端开发概念、Python 基础、AI工具应用、动手制作/维修</div>
                     </div>
                     <div class="skill-card">
-                        <div class="skill-category">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" x2="12.01" y1="17" y2="17"></line></svg>
-                            <span>AI 与大模型</span>
+                        <div class="skill-number">04</div>
+                        <div class="skill-title">AI 与大模型</div>
+                        <div class="skill-english">AI & Large Models</div>
+                        <div class="skill-footer">
+                            <div class="skill-provider">数据标注</div>
+                            <div class="skill-code">知识库</div>
+                            <div class="skill-category">RAG技术</div>
+                            <div class="skill-extra">Prompt工程</div>
                         </div>
-                        <div class="skill-items">数据标注、知识库搭建、RAG、Prompt、微调、模型评估、Agent</div>
                     </div>
-                    <div class="skill-card">
-                        <div class="skill-category">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" x2="7" y1="7" y2="7"></line></svg>
-                            <span>生活与探索</span>
-                        </div>
-                        <div class="skill-items">烹饪、旅行策划、活动组织</div>
-                    </div>
+                    
                 </div>
             </div>
         </div>

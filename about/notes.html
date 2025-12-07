@@ -393,6 +393,13 @@
         }
 
         /* 响应式设计 */
+        @media (max-width: 1100px) {
+            /* 在窗口宽度小于1100px时，隐藏右侧目录 */
+            .content-sidebar {
+                display: none;
+            }
+        }
+        
         @media (max-width: 768px) {
             .main-container {
                 flex-direction: column;
@@ -401,6 +408,18 @@
             .sidebar {
                 width: 100%;
                 height: 200px;
+            }
+            
+            /* 在小屏幕上，将右侧目录和正文垂直排列 */
+            .content-container {
+                flex-direction: column;
+            }
+            
+            .content-sidebar {
+                width: 100%;
+                height: 200px;
+                border-left: none;
+                border-top: 1px solid #e2e8f0;
             }
 
             .content {
@@ -908,23 +927,18 @@
             .then(data => {
                 document.getElementById('navbar-container').innerHTML = data;
                 
-                // 导航栏加载完成后，设置当前页面的导航项选中状态
-                const currentPath = window.location.pathname;
-                const navLinks = document.querySelectorAll('.navbar-menu a');
+                // 导航栏加载完成后，调用main.js中定义的导航初始化函数
+                initNavigation();
                 
-                navLinks.forEach(link => {
-                    // 跳过邮箱和微信图标链接
-                    if (link.closest('.email-icon-wrapper') || link.closest('.wechat-icon-wrapper')) {
-                        return;
-                    }
-                    
-                    const linkPath = link.getAttribute('href');
-                    const currentPage = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'index.html';
-                    
-                    if (linkPath === currentPage) {
-                        link.classList.add('active');
-                    }
-                });
+                // 为邮箱按钮重新绑定复制事件
+                const emailIcon = document.querySelector('.email-icon');
+                if (emailIcon) {
+                    emailIcon.onclick = function(e) {
+                        e.preventDefault();
+                        copyEmail();
+                        return false;
+                    };
+                }
                 
                 // 导航栏加载完成后，执行页面初始化逻辑
                 initPage();
@@ -1069,7 +1083,20 @@
         // 加载Markdown文件，优先使用URL参数
         async function loadMarkdownFile(fileName) {
             try {
-                // 只从后端API加载文件
+                // 1. 先从API获取文件索引列表
+                const indexResponse = await fetch('http://localhost:8001/api/files/index');
+                let displayName = fileName.replace('.md', ''); // 默认使用文件名作为标题
+                
+                if (indexResponse.ok) {
+                    const indexData = await indexResponse.json();
+                    // 查找对应文件的标题
+                    const foundFile = indexData.files.find(file => file.name === fileName);
+                    if (foundFile) {
+                        displayName = foundFile.title; // 使用数据库中的title字段作为标题
+                    }
+                }
+                
+                // 2. 加载文件内容
                 const apiResponse = await fetch(`http://localhost:8001/api/files/${encodeURIComponent(fileName)}`);
                 if (apiResponse.ok) {
                     const data = await apiResponse.json();
@@ -1078,13 +1105,16 @@
                     throw new Error(`从API获取文件失败: ${apiResponse.status}`);
                 }
                 
-                // 使用marked.js库处理Markdown
+                // 3. 使用marked.js库处理Markdown
                 let html = marked.parse(content);
                 
-                // 更新正文内容
+                // 4. 添加中文标题和横线
+                html = `<h1 class="file-title">${displayName}</h1>` + html;
+                
+                // 5. 更新正文内容
                 document.getElementById('notes-content').innerHTML = html;
                 
-                // 生成内容目录
+                // 6. 生成内容目录
                 generateContentTOC();
             } catch (error) {
                 console.error('Failed to load markdown file:', error);
@@ -1113,11 +1143,16 @@
             const headings = content.querySelectorAll('h1, h2, h3, h4, h5, h6');
             const contentTOC = document.querySelector('.content-toc');
             
+            // 过滤掉文件标题（带有file-title类的h1）
+            const filteredHeadings = Array.from(headings).filter(heading => 
+                !(heading.tagName === 'H1' && heading.classList.contains('file-title'))
+            );
+            
             // 清空现有目录
             contentTOC.innerHTML = '';
             
             // 如果没有标题，不显示目录
-            if (headings.length === 0) {
+            if (filteredHeadings.length === 0) {
                 return;
             }
             
@@ -1131,7 +1166,7 @@
             const tocHierarchy = [contentTOC]; // 初始层级为根目录
             let currentLevel = 1; // 初始级别为1
             
-            headings.forEach(heading => {
+            filteredHeadings.forEach(heading => {
                 const level = parseInt(heading.tagName.charAt(1));
                 const title = heading.textContent;
                 const id = heading.id;
@@ -1697,5 +1732,6 @@
             }
         })();
     </script>
+    <script src="assets/js/main.js"></script>
 </body>
 </html>

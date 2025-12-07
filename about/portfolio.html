@@ -20,33 +20,55 @@
             .then(data => {
                 document.getElementById('navbar-container').innerHTML = data;
                 
-                // 导航栏加载完成后，设置当前页面的导航项选中状态
-                const currentPath = window.location.pathname;
-                const navLinks = document.querySelectorAll('.navbar-menu a');
+                // 导航栏加载完成后，调用main.js中定义的导航初始化函数
+                initNavigation();
                 
-                navLinks.forEach(link => {
-                    // 跳过邮箱和微信图标链接
-                    if (link.closest('.email-icon-wrapper') || link.closest('.wechat-icon-wrapper')) {
-                        return;
-                    }
-                    
-                    const linkPath = link.getAttribute('href');
-                    const currentPage = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'index.html';
-                    
-                    if (linkPath === currentPage) {
-                        link.classList.add('active');
-                    }
-                });
+                // 为邮箱按钮重新绑定复制事件
+                const emailIcon = document.querySelector('.email-icon');
+                if (emailIcon) {
+                    emailIcon.onclick = function(e) {
+                        e.preventDefault();
+                        copyEmail();
+                        return false;
+                    };
+                }
             })
             .catch(error => {
                 console.error('加载导航栏失败:', error);
             });
     </script>
     
-    <!-- 页面标题 -->
-    <header class="recommendation-header">
-        <h1>我的作品集</h1>
-        <p>探索我的最新项目和创意作品</p>
+    <!-- 新的作品集头部 -->
+    <header class="portfolio-header cover">
+        <!-- 顶部信息 -->
+        <div class="top-info">
+            <div class="left">Product Design</div>
+            <div class="right">
+                <span class="dot"></span>
+                <span>作品/集</span>
+            </div>
+        </div>
+
+        <!-- 顶部logo -->
+        <div class="top-logo">
+            <div>
+                <div class="year">2025</div>
+                <span class="tag">产品设计</span>
+            </div>
+            <div class="desc">Including works such as prototype design, UI design, and graphic design.</div>
+        </div>
+
+        <!-- 标题区域 -->
+        <div class="title-section">
+            <div class="jp-title">
+                *設計<span class="circle"></span>作品集
+                
+            </div>
+        </div>
+
+        <!-- 英文标题 -->
+        <div class="en-title">Port folio<span class="avatar">
+        </div>
     </header>
     
     <!-- 作品集区域 -->
@@ -254,164 +276,172 @@
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
         }
         
-        /* 导航栏样式修改 - 移除悬浮背景色，只保留下划线 */
-        .navbar-menu li:not(.email-icon-wrapper):not(.wechat-icon-wrapper) a:hover {
-            background-color: transparent !important;
-        }
+
         
-        .navbar-menu li:not(.email-icon-wrapper):not(.wechat-icon-wrapper) a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 0;
-            height: 3px;
-            background-color: var(--primary-color);
-            border-radius: 3px;
-            transition: var(--transition-base);
-            transform: translateX(-50%);
-        }
+
         
-        .navbar-menu li:not(.email-icon-wrapper):not(.wechat-icon-wrapper) a:hover::after {
-            width: 80%; /* 增加下划线宽度 */
-        }
-        
-        /* 邮箱图标容器样式 */
-        .email-icon-wrapper {
+        /* 作品集头部样式 */
+        .portfolio-header.cover {
+            width: 100%;
+            
+            height: 400px;
+            margin: 5rem auto;
+            padding: 2rem;
+            background: #f4f4f4;
+            
+            
             position: relative;
+            overflow: hidden;
         }
         
-        /* 邮箱图标特殊处理，防止点击效果 */
-        .email-icon-wrapper .email-icon {
-            position: relative;
+        /* 顶部信息栏 */
+        .top-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .top-info .left {
+            letter-spacing: 1px;
+        }
+        
+        .top-info .right {
             display: flex;
             align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            padding: 8px !important;
-            border-radius: 50% !important;
-            background: rgba(255, 255, 255, 0.9);
-            color: var(--primary-color);
-            text-decoration: none !important;
-            border: none !important;
-            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease !important;
-            z-index: 2;
+            gap: 0.5rem;
         }
         
-        .email-icon-wrapper .email-icon:hover {
-            background: var(--primary-color);
-            color: white;
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        .top-info .right .dot {
+            width: 8px;
+            height: 8px;
+            background: #007AFF;
+            border-radius: 50%;
         }
         
-        /* 确保不显示下划线 */
-        .email-icon-wrapper .email-icon::after {
-            display: none !important;
-            content: none !important;
-        }
-        
-        /* 防止点击时的视觉反馈 */
-        .email-icon-wrapper .email-icon:active {
-            transform: none !important;
-            transition: none !important;
-        }
-        
-        /* 微信图标样式 */
-        .wechat-icon-wrapper {
+        /* 标题区域 */
+        .title-section {
+            text-align: center;
+            margin-top: 2rem;
             position: relative;
         }
         
-        .wechat-icon-wrapper .wechat-icon {
+        .title-section .jp-title {
+            font-size: 4rem;
+            font-weight: 900;
+            letter-spacing: 0.1em;
             position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            padding: 8px !important;
-            border-radius: 50% !important;
-            background: rgba(255, 255, 255, 0.9);
-            color: var(--primary-color); /* 改为与邮箱图标一致的颜色 */
-            text-decoration: none !important;
-            border: none !important;
-            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease !important;
-            z-index: 2;
+            display: inline-block;
         }
         
-        .wechat-icon-wrapper .wechat-icon:hover {
-            background: var(--primary-color);
-            color: white;
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        .title-section .jp-title .circle {
+            display: inline-block;
+            width: 2.5rem;
+            height: 2.5rem;
+            border: 3px solid #000;
+            border-radius: 50%;
+            position: relative;
+            top: -0.5rem;
+            margin: 0 0.2rem;
         }
         
-        /* 确保不显示下划线 */
-        .wechat-icon-wrapper .wechat-icon::after {
-            display: none !important;
-            content: none !important;
+        .title-section .jp-title .reels {
+            font-size: 1.8rem;
+            color: #999;
+            font-weight: 300;
+            margin-left: 1rem;
         }
         
-        /* 防止点击时的视觉反馈 */
-        .wechat-icon-wrapper .wechat-icon:active {
-            transform: none !important;
-            transition: none !important;
+        /* 英文标题 */
+        .en-title {
+            font-size: 14rem;
+            font-weight: 900;
+            color: #dddddd;
+            letter-spacing: -0.05em;
+            /* margin-top: -1.5rem; */
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            letter-spacing: 12px;
         }
         
-        /* 二维码样式 */
-        .wechat-qrcode {
-            position: absolute;
-            top: 120%;
-            right: 0;
-            background: white;
-            padding: 12px;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
-            z-index: 1000;
-        }
-        
-        /* 二维码箭头指示器 */
-        .wechat-qrcode::before {
-            content: '';
-            position: absolute;
-            top: -8px;
-            right: 16px;
-            width: 0;
-            height: 0;
-            border-left: 8px solid transparent;
-            border-right: 8px solid transparent;
-            border-bottom: 8px solid white;
-        }
-        
-        /* 二维码图片样式 */
-        .wechat-qrcode img {
+        /* 头像装饰 */
+        .avatar {
             width: 200px;
             height: 200px;
-            border: 1px solid #e0e0e0;
+            background: #333;
+            border-radius: 50%;
+            position: relative;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -30%);
+            z-index: 2;
+            clip-path: polygon(
+                50% 0%,
+                61% 35%,
+                98% 35%,
+                68% 57%,
+                79% 91%,
+                50% 70%,
+                21% 91%,
+                32% 57%,
+                2% 35%,
+                39% 35%
+            ); /* 刺状发型裁剪 */
         }
         
-        /* 二维码文字样式 */
-        .wechat-qrcode p {
-            margin: 0;
-            font-size: 14px;
-            color: #333;
+        /* 顶部logo区域 */
+        .top-logo {
+            position: absolute;
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
             text-align: center;
         }
         
-        /* 鼠标悬浮时显示二维码 */
-        .wechat-icon-wrapper .wechat-icon:hover .wechat-qrcode {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
+        .top-logo > div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .top-logo .year {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .top-logo .year::before {
+            content: "";
+            width: 20px;
+            height: 20px;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1034 1024' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1011.982 842.518L606.673 140.565c-49.575-85.822-130.595-85.822-180.157 0L21.205 842.518c-49.562 85.91-9.015 155.99 90.04 155.99l810.693 0C1020.997 998.507 1061.502 928.423 1011.982 842.518zM460.924 339.737c14.565-15.747 33.082-23.622 55.665-23.622 22.595 0 41.095 7.792 55.675 23.307 14.485 15.55 21.725 34.997 21.725 58.382 0 20.12-30.235 168.07-40.32 275.704l-72.825 0c-8.845-107.635-41.652-255.584-41.652-275.704C439.194 374.774 446.446 355.407 460.924 339.737zM571.244 851.538c-15.32 14.92-33.55 22.355-54.65 22.355-21.095 0-39.33-7.435-54.647-22.355-15.275-14.885-22.867-32.915-22.867-54.09 0-21.065 7.592-39.29 22.867-54.565 15.317-15.28 33.552-22.92 54.647-22.92 21.1 0 39.33 7.64 54.65 22.92 15.265 15.275 22.875 33.5 22.875 54.565C594.119 818.623 586.509 836.653 571.244 851.538z' fill='%23000000'/%3E%3C/svg%3E");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: block;
+        }
+        
+        .top-logo .tag {
+            background: #000;
+            color: #fff;
+            padding: 0.2rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        
+        .top-logo .desc {
+            font-size: 0.7rem;
+            color: #666;
+            margin-top: 0.3rem;
+            letter-spacing: 1px;
         }
     </style>
     

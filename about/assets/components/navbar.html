@@ -1,3 +1,8 @@
+<!-- 引入Poppins字体 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet">
+
 <!-- 通用导航栏组件 -->
 <nav class="navbar fixed-top">
     <div class="container">
@@ -32,40 +37,77 @@
 
 <!-- 导航栏相关样式 -->
 <style>
-    /* 导航栏样式修改 - 移除悬浮背景色，只保留下划线 */
-    .navbar-menu li:not(.email-icon-wrapper):not(.wechat-icon-wrapper) a:hover {
-        background-color: transparent !important;
+    /* 导航栏样式修改 - 按照设计规范 */
+    /* 导航列表样式 */
+    .navbar-menu ul {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        padding: 10px;
+        gap: 16px;
     }
     
-    /* 将首页、关于我、作品集菜单项向下移动 */
+    /* 导航项样式 */
     .navbar-menu li:not(.email-icon-wrapper):not(.wechat-icon-wrapper) {
-        margin-top: 8px; /* 调整这个值可以改变向下移动的距离 */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 8px;
+        width: auto;
+        height: 40px;
+        margin-top: 0; /* 移除之前的向下移动 */
+        text-align: left;
     }
     
+    /* 链接基础样式 */
+    .navbar-menu li:not(.email-icon-wrapper):not(.wechat-icon-wrapper) a {
+        font-family: 'Poppins', sans-serif;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 24px;
+        color: rgba(14, 14, 44, 0.6);
+        text-decoration: none;
+        position: relative;
+        background-color: transparent !important;
+        /* 移除strong标签的加粗效果，使用字体权重控制 */
+        font-weight: 500 !important;
+        /* 防止文本换行 */
+        white-space: nowrap;
+        /* 确保文本左对齐 */
+        text-align: left;
+    }
+    
+    /* 下划线样式 */
     .navbar-menu li:not(.email-icon-wrapper):not(.wechat-icon-wrapper) a::after {
         content: '';
         position: absolute;
-        bottom: 0;
-        left: 50%;
-        width: 0;
-        height: 3px;
-        background-color: var(--primary-color);
-        border-radius: 3px;
-        transition: var(--transition-base);
-        transform: translateX(-50%);
+        bottom: -2px;
+        /* left: 0; */
+        width: 28px;
+        height: 0px;
+        border: 2px solid #3B71FE;
+        display: none;
     }
     
-    .navbar-menu li:not(.email-icon-wrapper):not(.wechat-icon-wrapper) a:hover::after {
-        width: 80%; /* 增加下划线宽度 */
-    }
-    
-    /* 导航项选中状态样式 */
+    /* 选中状态样式 */
     .navbar-menu li:not(.email-icon-wrapper):not(.wechat-icon-wrapper) a.active {
-        color: black; /* 选中时字体变为黑色 */
+        color: #0E0E2C;
+        font-weight: 600 !important;
     }
     
     .navbar-menu li:not(.email-icon-wrapper):not(.wechat-icon-wrapper) a.active::after {
-        width: 80%; /* 选中时显示下划线 */
+        display: block;
+    }
+    
+    /* 悬浮状态样式 */
+    .navbar-menu li:not(.email-icon-wrapper):not(.wechat-icon-wrapper) a:hover {
+        color: #0E0E2C;
+    }
+    
+    .navbar-menu li:not(.email-icon-wrapper):not(.wechat-icon-wrapper) a:hover::after {
+        display: block;
     }
     
     /* 邮箱图标容器样式 */
@@ -210,7 +252,7 @@
 <!-- 邮箱复制函数 -->
 <script>
     function copyEmail() {
-        const email = 'example@example.com';
+        const email = '3317934186@qq.com';
         navigator.clipboard.writeText(email).then(() => {
             alert('邮箱地址已复制到剪贴板: ' + email);
         }).catch(err => {
@@ -225,19 +267,4 @@
             alert('邮箱地址已复制到剪贴板: ' + email);
         });
     }
-    
-    // 设置导航栏选中状态
-    document.addEventListener('DOMContentLoaded', function() {
-        const currentPath = window.location.pathname;
-        const navLinks = document.querySelectorAll('.navbar-menu li:not(.email-icon-wrapper):not(.wechat-icon-wrapper) a');
-        
-        navLinks.forEach(link => {
-            const linkPath = link.getAttribute('href');
-            const currentPage = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'index.html';
-            
-            if (linkPath === currentPage) {
-                link.classList.add('active');
-            }
-        });
-    });
 </script>

@@ -51,6 +51,53 @@ function addCardHoverEffect(cards) {
     });
 }
 
+// 导航功能初始化
+function initNavigation() {
+    // 设置当前页面导航项的活动状态
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('.navbar-menu li:not(.email-icon-wrapper):not(.wechat-icon-wrapper) a');
+    
+    navLinks.forEach(link => {
+        const linkPath = link.getAttribute('href');
+        const currentPage = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'index.html';
+        
+        if (linkPath === currentPage) {
+            // 为当前页面的导航链接添加active类
+            link.classList.add('active');
+        }
+    });
+    
+    // 移动导航切换
+    const navbarToggle = document.querySelector('.navbar-toggle');
+    const navbarMenu = document.querySelector('.navbar-menu');
+
+    if (navbarToggle && navbarMenu) {
+        navbarToggle.addEventListener('click', function() {
+            navbarMenu.classList.toggle('active');
+        });
+        
+        // 点击菜单项后关闭菜单
+        const navLinks = navbarMenu.querySelectorAll('a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                navbarMenu.classList.remove('active');
+            });
+        });
+    }
+}
+
+// 检查导航栏是否已经加载
+function checkNavigationLoaded() {
+    const navbarContainer = document.getElementById('navbar-container');
+    if (navbarContainer && navbarContainer.innerHTML.trim() !== '') {
+        // 导航栏已加载，初始化导航功能
+        initNavigation();
+    } else {
+        // 导航栏未加载，延迟后再次检查
+        setTimeout(checkNavigationLoaded, 100);
+    }
+}
+
 // DOM 加载完成后的初始化
 document.addEventListener('DOMContentLoaded', function() {
     // 移除了重复的事件监听器，避免与HTML中的onclick属性冲突
@@ -107,58 +154,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // 设置当前页面导航项的活动状态
-    const currentPath = window.location.pathname;
-    const navLinks = document.querySelectorAll('.navbar-menu a');
-    
-    navLinks.forEach(link => {
-        if (link.getAttribute('href') === currentPath.substring(currentPath.lastIndexOf('/') + 1) || 
-            (currentPath === '/' && link.getAttribute('href') === 'index.html')) {
-            // 为当前页面的导航链接添加active类
-            link.classList.add('active');
-        }
-    });
-    
-    // 移动导航切换
-    const navbarToggle = document.querySelector('.navbar-toggle');
-    const navbarMenu = document.querySelector('.navbar-menu');
-
-    if (navbarToggle && navbarMenu) {
-        navbarToggle.addEventListener('click', function() {
-            navbarMenu.classList.toggle('active');
-            // 更新按钮图标
-            const icon = navbarToggle.querySelector('i') || navbarToggle;
-            if (navbarMenu.classList.contains('active')) {
-                if (icon.classList.contains('fa-bars')) {
-                    icon.classList.remove('fa-bars');
-                    icon.classList.add('fa-times');
-                }
-                navbarToggle.style.backgroundColor = 'var(--secondary-color)';
-                navbarToggle.style.color = 'var(--text-primary)';
-            } else {
-                if (icon.classList.contains('fa-times')) {
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                }
-                navbarToggle.style.backgroundColor = 'var(--bg-primary)';
-                navbarToggle.style.color = 'var(--text-primary)';
-            }
-        });
-        
-        // 点击菜单项后关闭菜单
-        const navLinks = navbarMenu.querySelectorAll('a');
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                navbarMenu.classList.remove('active');
-                const icon = navbarToggle.querySelector('i') || navbarToggle;
-                if (icon.classList.contains('fa-times')) {
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                }
-                navbarToggle.style.backgroundColor = 'var(--bg-primary)';
-            });
-        });
-    }
+    // 检查导航栏是否已经加载
+    checkNavigationLoaded();
     
     // 模态框功能
     const modal = document.getElementById('project-modal');
