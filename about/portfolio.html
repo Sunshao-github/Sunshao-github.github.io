@@ -60,10 +60,7 @@
 
         <!-- 标题区域 -->
         <div class="title-section">
-            <div class="jp-title">
-                *設計<span class="circle"></span>作品集
-                
-            </div>
+            <div class="jp-title">*設計<div class="icon"><div class="rect-outer"><div class="rect-inner"></div></div><div class="rect-outer"><div class="rect-inner"></div></div></div>作品集</div>
         </div>
 
         <!-- 英文标题 -->
@@ -225,6 +222,43 @@
         </div>
     </section>
     
+    <!-- 矩形图标样式 -->
+    <style>
+        .jp-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+        }
+        
+        .icon {
+            
+            display: flex;
+            /* gap: 10px; */
+            align-items: center;
+            white-space: nowrap;
+        }
+        /* 外层大圆角矩形（白色背景+黑色边框） */
+        .rect-outer {
+            width: 45px;
+            height: 80px;
+            border: 6px solid #000;
+            border-radius: 40px; /* 圆角半径，数值越大越圆润 */
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative; /* 添加相对定位，确保内层矩形相对于外层矩形定位 */
+        }
+        /* 内层小圆角矩形（黑色填充） */
+        .rect-inner {
+            width: 21px;
+            height: 37px;
+            background: #000;
+            border-radius: 25px; /* 内层圆角匹配外层比例 */
+        }
+    </style>
+    
     <!-- 项目卡片样式调整 -->
     <style>
         /* 推荐清单头部样式 */
@@ -285,8 +319,8 @@
             width: 100%;
             
             height: 400px;
-            margin: 5rem auto;
-            padding: 2rem;
+            margin-top: 3rem;
+            padding: 3rem;
             background: #f4f4f4;
             
             
@@ -333,7 +367,11 @@
             font-weight: 900;
             letter-spacing: 0.1em;
             position: relative;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            top: 43px;
+            white-space: nowrap;
         }
         
         .title-section .jp-title .circle {
@@ -395,7 +433,7 @@
         /* 顶部logo区域 */
         .top-logo {
             position: absolute;
-            top: 2rem;
+            /* top: 2rem; */
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
@@ -464,5 +502,68 @@
             });
         }
     </script>
-</body>
+<script>
+        // 实现矩形内部元素跟随鼠标移动效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取所有的外层矩形和内层矩形
+            const outerRects = document.querySelectorAll('.rect-outer');
+            const innerRects = document.querySelectorAll('.rect-inner');
+            
+            // 监听鼠标移动事件
+            window.addEventListener('mousemove', function(e) {
+                // 获取鼠标在页面上的坐标
+                const mouseX = e.clientX;
+                const mouseY = e.clientY;
+                
+                // 遍历所有外层矩形和内层矩形
+                outerRects.forEach((outer, index) => {
+                    const inner = innerRects[index];
+                    if (!inner) return;
+                    
+                    // 获取外层矩形的位置和尺寸
+                    const outerRect = outer.getBoundingClientRect();
+                    const outerX = outerRect.left;
+                    const outerY = outerRect.top;
+                    const outerWidth = outerRect.width;
+                    const outerHeight = outerRect.height;
+                    
+                    // 获取内层矩形的尺寸
+                    const innerRect = inner.getBoundingClientRect();
+                    const innerWidth = innerRect.width;
+                    const innerHeight = innerRect.height;
+                    
+                    // 计算外层矩形的实际可用空间（考虑边框）
+                    // 外层矩形有6px的边框，所以内部可用空间需要减去边框宽度
+                    const borderWidth = 6; // 外层矩形的边框宽度
+                    const availableWidth = outerWidth - 2 * borderWidth;
+                    const availableHeight = outerHeight - 2 * borderWidth;
+                    
+                    // 计算内层矩形在容器内的最大移动范围
+                    // 确保内层矩形的边缘不会超出外层矩形的边缘
+                    const maxX = availableWidth - innerWidth;
+                    const maxY = availableHeight - innerHeight;
+                    
+                    // 计算鼠标相对于外层矩形的位置（考虑边框偏移）
+                    const relativeX = mouseX - outerX - borderWidth;
+                    const relativeY = mouseY - outerY - borderWidth;
+                    
+                    // 将鼠标位置映射到内层矩形的移动范围内
+                    // 使用线性映射，确保内层矩形不会超出外层矩形
+                    let innerX = (relativeX / availableWidth) * maxX;
+                    let innerY = (relativeY / availableHeight) * maxY;
+                    
+                    // 确保内层矩形不会超出外层矩形的边界
+                    // 添加边界检查，确保内层矩形完全在外层矩形内部
+                    innerX = Math.max(0, Math.min(maxX, innerX));
+                    innerY = Math.max(0, Math.min(maxY, innerY));
+                    
+                    // 设置内层矩形的位置
+                    inner.style.position = 'absolute';
+                    inner.style.left = `${innerX}px`;
+                    inner.style.top = `${innerY}px`;
+                });
+            });
+        });
+    </script>
+    </body>
 </html>

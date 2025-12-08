@@ -270,55 +270,103 @@
             z-index: 1;
         }
 
-        /* 核心定位样式 */
+        /* 核心定位样式 - 根据Figma设计稿修改 */
         .core-position {
             background-color: #f9f9f9;
-            padding: 4rem 0;
-            margin: 2rem 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 6rem 0;
+            margin: 0;
+            border-radius: 0;
+            box-shadow: none;
         }
         
         .position-content {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
-            text-align: center;
+            text-align: left;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 60px;
+            padding: 0 20px;
+            position: relative;
+        }
+        
+        /* SVG连接线样式 */
+        .connection-line {
+            position: absolute;
+            top: 84%;
+            transform: translateY(-50%);
+            z-index: 0;
+            width: 300px;
+            height: 190px;
+        }
+        
+        /* 第一个连接线（01到02） */
+        .line-01-02 {
+            left: calc(26.33% - 150px);
+            transform: translateY(-50%) rotate(0deg);
+            height: 160px;
+            top: 20px;
+        }
+        
+        /* 第二个连接线（02到03） */
+        .line-02-03 {
+            left: calc(66.66% - 150px);
+            transform: translateY(-50%) rotate(0deg);
         }
         
         .position-item {
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-color: transparent;
+            border-radius: 0;
+            padding: 40px;
+            box-shadow: none;
+            transition: none;
+            border: none;
         }
         
         .position-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transform: none;
+            box-shadow: none;
+            border-color: transparent;
         }
         
         .position-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #ff6b6b;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0e0e2a;
+            margin-bottom: 25px;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+        
+        .title-number {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #3B71FE;
+            margin-right: 15px;
         }
         
         .position-statement {
-            font-size: 1.25rem;
-            line-height: 1.6;
-            font-style: italic;
-            color: #333;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.125rem;
+            line-height: 1.8;
+            font-style: normal;
+            color: #6e6e7f;
             padding: 0;
             border-left: none;
             background-color: transparent;
             border-radius: 0;
+        }
+        
+        .section-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #0E0E2C;
+            text-align: center;
+            margin-bottom: 60px;
+            letter-spacing: -0.5px;
         }
         
         /* 内在操作系统样式 */
@@ -1392,18 +1440,30 @@
     <!-- 核心定位 -->
     <section class="core-position">
         <div class="container">
-            <h2 class="section-title">我的核心定位</h2>
+            <!-- <h2 class="section-title">我的核心定位</h2> -->
             <div class="position-content">
+                <!-- SVG连接线 -->
+                <svg class="connection-line line-01-02" width="300" height="150" viewBox="0 0 300 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 75 Q 150 -80, 300 75" stroke="#3B71FE" stroke-width="2" stroke-dasharray="5 5" fill="none" />
+                    <path d="M295 70 L300 75 L295 80" stroke="#3B71FE" stroke-width="2" fill="none" transform="rotate(45 300 75)" />
+                </svg>
+                
+                <svg class="connection-line line-02-03" width="300" height="150" viewBox="0 0 300 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 75 Q 150 250, 300 75" stroke="#3B71FE" stroke-width="2" stroke-dasharray="5 5" fill="none" />
+                    <path d="M295 70 L300 75 L295 80" stroke="#3B71FE" stroke-width="2" fill="none" transform="rotate(-45 300 75)"/>
+                </svg>
+                
+                <!-- 卡片内容 -->
                 <div class="position-item">
-                    <h3 class="position-title">我是谁？</h3>
+                    <h3 class="position-title"><span class="title-number">01</span> 我是谁 ？</h3>
                     <p class="position-statement">"一个追求自主的建造者，信奉在创造中认识自我。"</p>
                 </div>
                 <div class="position-item">
-                    <h3 class="position-title">我如何思考</h3>
+                    <h3 class="position-title"><span class="title-number">02</span> 我如何思考 ?</h3>
                     <p class="position-statement">"用系统思维解构复杂问题，用关联思维连接跨界知识。"</p>
                 </div>
                 <div class="position-item">
-                    <h3 class="position-title">我如何行动</h3>
+                    <h3 class="position-title"><span class="title-number">03</span> 我如何行动 ?</h3>
                     <p class="position-statement">"从洞察到原型，我享受亲手将想法落地的完整闭环。"</p>
                 </div>
             </div>

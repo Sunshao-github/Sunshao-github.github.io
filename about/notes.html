@@ -44,26 +44,34 @@
 
 
 
+        /* 页面容器：三栏布局 */
+        body {
+            background-color: #f7f8fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
         /* 主内容区 */
         .main-container {
             display: flex;
             margin-top: 90px;
-            height: calc(100vh - 80px); /* 减去导航栏高度，占满剩余视口高度 */
-            overflow: hidden; /* 主内容区不可滑动 */
+            height: calc(100vh - 80px);
+            overflow: hidden;
+            position: relative;
         }
 
-        /* 左侧目录 */
+        /* 左侧导航栏 */
         .sidebar {
-            width: 300px;
+            width: 240px;
             background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            overflow-y: auto; /* 文件目录可单独滑动 */
+            border-right: 1px solid #e5e7eb;
             padding: 20px 0;
-            margin-right: 10px;
-            height: 100%; /* 高度100%，自适应main-container */
-            transition: width 0.3s ease;
             position: relative;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 10;
+            transition: width 0.3s ease;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
         }
 
         /* 折叠状态的侧边栏 */
@@ -73,14 +81,16 @@
         }
 
         .sidebar-header {
-            padding: 0 60px 16px;
-            font-size: 20px;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 18px;
+            color: #2563eb;
             font-weight: 600;
-            color: #1e293b;
-            border-bottom: 1px solid #e2e8f0;
-            margin-bottom: 16px;
-            position: relative;
-            transition: opacity 0.3s ease;
+            margin: 0;
         }
 
         /* 折叠状态下隐藏标题文字 */
@@ -92,10 +102,10 @@
         /* 折叠展开按钮样式 */
         .toggle-btn {
             position: absolute;
-            top: 10px;
-            
+            bottom: 150px;
+            /* left: -10px; */
             background-color: #fff;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #e5e7eb;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -105,14 +115,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
             z-index: 100;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .toggle-btn:hover {
-            background-color: #f1f5f9;
-            color: #3b82f6;
+            background-color: #f3f4f6;
+            color: #2563eb;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
@@ -120,20 +130,6 @@
         .sidebar.collapsed .toc-tree {
             opacity: 0;
             visibility: hidden;
-        }
-
-        /* 主容器需要相对定位以容纳绝对定位的按钮 */
-        .main-container {
-            position: relative;
-        }
-
-        /* 主容器调整 */
-        .main-container {
-            display: flex;
-            margin-top: 90px;
-            height: calc(100vh - 80px); /* 减去导航栏高度，占满剩余视口高度 */
-            overflow: hidden; /* 主内容区不可滑动 */
-            transition: all 0.3s ease;
         }
 
         /* 目录树 */
@@ -147,29 +143,31 @@
 
         .toc-link {
             display: block;
-            padding: 8px 20px;
-            color: #475569;
+            padding: 10px 20px;
+            color: #4b5563;
             text-decoration: none;
             font-size: 14px;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
             cursor: pointer;
+            border-left: 3px solid transparent;
         }
 
         .toc-link:hover {
-            background-color: #f1f5f9;
-            color: #3b82f6;
+            background-color: #f3f4f6;
+            color: #2563eb;
         }
 
         .toc-link.active {
-            background-color: #e0f2fe;
-            color: #0284c7;
+            background-color: #eff6ff;
+            color: #2563eb;
             font-weight: 500;
+            border-left-color: #2563eb;
         }
 
         /* 子目录 */
         .toc-children {
             list-style: none;
-            margin-left: 16px;
+            margin-left: 0;
             display: block;
         }
 
@@ -193,12 +191,9 @@
         .content-container {
             flex: 1;
             display: flex;
-            
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            background-color: transparent;
             overflow: hidden;
-            height: 100%; /* 高度100%，自适应main-container */
+            height: 100%;
             transition: all 0.3s ease;
         }
 
@@ -209,57 +204,125 @@
 
         /* 中间正文 */
         .content {
-            flex: 2;
-            overflow-y: auto; /* 内容区域可单独滑动 */
-            padding: 32px 64px;
-            height: 100%; /* 高度100%，自适应content-container */
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px 40px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            margin: 0 10px;
+        }
+
+        /* 内容头部 */
+        #notes-content h1 {
+            font-size: 24px;
+            color: #1f2937;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        /* 只给没有file-title类的h1添加指示条（即Markdown转出来的h1） */
+        #notes-content h1:not(.file-title) {
+            display: flex;
+            align-items: center;
+        }
+
+        #notes-content h1:not(.file-title)::before {
+            content: "";
+            display: inline-block;
+            width: 5px;
+            height: 24px;
+            background-color: #2563eb;
+            margin-right: 12px;
+            border-radius: 4px;
+        }
+        
+        /* 文件名h1特殊样式（HTML直接生成的） */
+        #notes-content h1.file-title {
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        #notes-content h2 {
+            font-size: 20px;
+            color: #1f2937;
+            font-weight: 600;
+            margin-top: 32px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        #notes-content h2::before {
+            content: "";
+            display: inline-block;
+            width: 5px;
+            height: 24px;
+            background-color: #2563eb;
+            margin-right: 12px;
+            border-radius: 4px;
         }
 
         /* 右侧内容目录 */
         .content-sidebar {
-            width: 300px;
-            background-color: #f8fafc;
-            border-left: 1px solid #e2e8f0;
-            overflow-y: auto; /* 内容目录可单独滑动 */
+            width: 260px;
+            flex-shrink: 0; /* 确保右侧目录不会收缩 */
+            background-color: #fff;
+            border-left: 1px solid #e5e7eb;
+            overflow-y: auto;
             padding: 20px 0;
-            height: 100%; /* 高度100%，自适应content-container */
+            height: 100%;
+            box-shadow: -1px 0 5px rgba(0, 0, 0, 0.05);
+            border-radius: 8px 0 0 8px;
         }
 
         .content-sidebar-header {
             padding: 0 20px 16px;
             font-size: 16px;
             font-weight: 600;
-            color: #1e293b;
-            border-bottom: 1px solid #e2e8f0;
+            color: #1f2937;
+            border-bottom: 1px solid #e5e7eb;
             margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .content-sidebar-header::before {
+            content: "📑";
+            margin-right: 8px;
+            font-size: 18px;
         }
 
         .content-toc {
             list-style: none;
+            padding-left: 8px;
         }
 
         .content-toc-item {
-            margin-bottom: 4px;
+            margin-bottom: 8px;
         }
 
         .content-toc-link {
             display: block;
             padding: 8px 20px;
-            color: #475569;
+            color: #4b5563;
             text-decoration: none;
             font-size: 14px;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
             cursor: pointer;
+            border-radius: 4px;
         }
 
         .content-toc-link:hover {
-            background-color: #f1f5f9;
-            color: #3b82f6;
+            color: #2563eb;
+            background-color: #eff6ff;
+            text-decoration: underline;
+            text-underline-offset: 2px;
         }
 
         .content-toc-link.active {
-            background-color: #e0f2fe;
-            color: #0284c7;
+            background-color: #eff6ff;
+            color: #2563eb;
             font-weight: 500;
         }
 
@@ -270,26 +333,9 @@
         }
 
         /* 正文样式 */
-        .content h1 {
-            font-size: 32px;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 24px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .content h2 {
-            font-size: 24px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-top: 32px;
-            margin-bottom: 16px;
-        }
-
         .content p {
             margin-bottom: 16px;
-            color: #475569;
+            color: #4b5563;
             font-size: 16px;
             line-height: 1.7;
         }
@@ -297,9 +343,9 @@
         /* 代码块样式 */
         .code-block,
         pre {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
             padding: 16px;
             margin: 16px 0;
             overflow-x: auto;
@@ -310,9 +356,9 @@
         }
         
         code {
-            background-color: #f1f5f9;
+            background-color: #f3f4f6;
             padding: 2px 4px;
-            border-radius: 3px;
+            border-radius: 4px;
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
             font-size: 14px;
         }
@@ -325,11 +371,12 @@
 
         /* 引用样式 */
         .quote {
-            border-left: 4px solid #3b82f6;
+            border-left: 4px solid #2563eb;
             padding-left: 16px;
             margin: 16px 0;
-            color: #64748b;
+            color: #6b7280;
             font-style: italic;
+            background-color: #f9fafb;
         }
 
         /* 列表样式 */
@@ -337,7 +384,7 @@
         .content ol {
             margin: 16px 0;
             padding-left: 24px;
-            color: #475569;
+            color: #4b5563;
         }
 
         .content li {
@@ -350,13 +397,13 @@
             gap: 8px;
             margin-top: 24px;
             padding-top: 24px;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid #e5e7eb;
         }
 
         .tag {
             padding: 4px 12px;
-            background-color: #f1f5f9;
-            color: #64748b;
+            background-color: #f3f4f6;
+            color: #6b7280;
             font-size: 12px;
             border-radius: 12px;
             font-weight: 500;
@@ -369,9 +416,9 @@
             align-items: center;
             margin-top: 48px;
             padding-top: 24px;
-            border-top: 1px solid #e2e8f0;
-            color: #94a3b8;
-            font-size: 14px;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 13px;
         }
 
         /* 滚动条样式 */
@@ -380,7 +427,7 @@
         }
 
         ::-webkit-scrollbar-track {
-            background: #f1f5f9;
+            background: #f3f4f6;
         }
 
         ::-webkit-scrollbar-thumb {
@@ -393,10 +440,28 @@
         }
 
         /* 响应式设计 */
+        @media (max-width: 1200px) {
+            /* 在窗口宽度小于1200px时，调整布局 */
+            .content-sidebar {
+                width: 200px;
+            }
+            
+            .content {
+                max-width: none; /* 移除最大宽度限制，让内容充分利用空间 */
+                flex: 1; /* 确保内容区域占据全部可用空间 */
+            }
+        }
+        
         @media (max-width: 1100px) {
             /* 在窗口宽度小于1100px时，隐藏右侧目录 */
             .content-sidebar {
                 display: none;
+            }
+            
+            .content {
+                max-width: none; /* 移除最大宽度限制，让内容完全占据空间 */
+                margin-right: 10px;
+                flex: 1; /* 确保内容区域占据全部可用空间 */
             }
         }
         
@@ -419,14 +484,96 @@
                 width: 100%;
                 height: 200px;
                 border-left: none;
-                border-top: 1px solid #e2e8f0;
+                border-top: 1px solid #e5e7eb;
             }
 
             .content {
-                margin: 0;
+                margin: 10px;
                 padding: 20px;
                 border-radius: 0;
+                max-width: 100%;
             }
+        }
+
+        /* 特点卡片样式 - 用于内容中的卡片展示 */
+        .feature-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .feature-card {
+            flex: 1;
+            min-width: 180px;
+            padding: 16px;
+            background-color: #f9fafb;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .feature-card-icon {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: #2563eb;
+        }
+
+        .feature-card-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: #1f2937;
+        }
+
+        .feature-card-desc {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        /* 概念提示样式 */
+        .concept-tip {
+            border-left: 3px solid #2563eb;
+            padding: 16px;
+            background-color: #f9fafb;
+            margin-bottom: 16px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .concept-tip-title {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #1f2937;
+        }
+
+        .concept-tip-desc {
+            font-size: 14px;
+            color: #4b5563;
+        }
+
+        /* 表格样式 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #eff6ff;
+            color: #1f2937;
+            font-weight: 500;
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        td {
+            padding: 12px 16px;
+            color: #4b5563;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9fafb;
         }
 
         /* 管理按钮样式 */
@@ -780,7 +927,7 @@
             <!-- 中间正文 -->
             <main class="content">
                 <div id="notes-content">
-                    <h1>选择一个文档查看</h1>
+                    <h1 style="border-bottom: 1px solid #e2e8f0;">选择一个文档查看</h1>
                     <p>请从左侧文件目录中选择一个文档查看内容。</p>
                 </div>
             </main>
@@ -1071,12 +1218,19 @@
         // 侧边栏整体折叠展开功能
         const toggleBtn = document.getElementById('toggle-sidebar');
         const sidebar = document.querySelector('.sidebar');
-        const mainContainer = document.querySelector('.main-container');
+        const content = document.querySelector('.content');
         
-        if (toggleBtn && sidebar) {
+        if (toggleBtn && sidebar && content) {
             toggleBtn.addEventListener('click', function() {
                 // 切换侧边栏折叠状态
                 sidebar.classList.toggle('collapsed');
+                
+                // 调整中间内容区域的样式
+                if (sidebar.classList.contains('collapsed')) {
+                    content.style.marginLeft = '10px';
+                } else {
+                    content.style.marginLeft = '10px';
+                }
             });
         }
         
@@ -1098,6 +1252,7 @@
                 
                 // 2. 加载文件内容
                 const apiResponse = await fetch(`http://localhost:8001/api/files/${encodeURIComponent(fileName)}`);
+                let content;
                 if (apiResponse.ok) {
                     const data = await apiResponse.json();
                     content = data.content;
