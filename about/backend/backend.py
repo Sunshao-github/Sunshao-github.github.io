@@ -91,7 +91,7 @@ def create_table():
     try:
         # 检查表是否存在
         result = supabase_client.table("markdown_files").select("id").limit(1).execute()
-        print("表已存在")
+        # 表已存在，不打印消息以保持日志简洁
     except Exception as e:
         # 如果表不存在，打印详细信息
         print(f"表不存在: {e}")
@@ -380,6 +380,8 @@ async def delete_file(file_name: str):
 async def health_check():
     """检查API服务是否正常运行"""
     return {"status": "ok", "message": "Markdown File Manager API is running"}
+
+
 
 @app.post("/api/admin/auth", summary="管理员登录验证")
 async def admin_auth(password: str = Body(..., embed=True)):
