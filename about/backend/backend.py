@@ -143,17 +143,9 @@ async def get_files():
         
         return FileListResponse(files=files)
     except Exception as e:
-        # 如果从数据库获取失败，尝试从本地文件系统获取
+        # 如果从数据库获取失败，直接返回空列表，不再尝试本地文件系统
         print(f"Error getting files from database: {e}")
-        try:
-            # 从本地文件系统获取文件列表
-            files = [f for f in os.listdir(NOTES_DIR) if f.endswith(".md")]
-            files.sort()
-            return FileListResponse(files=files)
-        except Exception as e2:
-            print(f"Error getting files from local: {e2}")
-            # 如果获取失败，返回空列表
-            return FileListResponse(files=[])
+        return FileListResponse(files=[])
 
 @app.get("/api/files/index", response_model=FileIndexListResponse, summary="获取文件索引列表")
 async def get_file_indexes():
