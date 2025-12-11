@@ -9,6 +9,10 @@
     <link rel="icon" type="image/svg+xml" href="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511231053182.png">
     <link rel="shortcut icon" href="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511231053182.png">
     <meta name="theme-color" content="#ff6b6b">
+    <!-- 引入Three.js库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- 引入Font Awesome图标库 -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> -->
     <style>
         /* 页面标题区样式 */
         .hero-section {
@@ -26,6 +30,20 @@
             text-align: center;
             z-index: 10;
             transition: all 0.5s ease;
+            animation: backgroundZoom 20s linear infinite;
+        }
+        
+        /* 背景图片缩放动画 */
+        @keyframes backgroundZoom {
+            0% {
+                background-size: 100% 100%; /* 初始大小 */
+            }
+            50% {
+                background-size: 105% 105%; /* 仅放大5%，更平缓 */
+            }
+            100% {
+                background-size: 100% 100%; /* 回到初始大小 */
+            }
         }
         
         /* 英雄区域隐退状态 */
@@ -407,6 +425,324 @@
             border-radius: 4px;
         }
 
+        /* 3D球体容器样式 */
+        #3d-sphere-container {
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 80px); /* 减去导航栏高度 */
+            background-color: #000;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #sphere-canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* 加载状态样式 */
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 1.5rem;
+            z-index: 100;
+        }
+        
+        /* 进度条控制样式 */
+        #zoom-control {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 100;
+            background-color: rgba(0, 0, 0, 0.3); /* 降低不透明度 */
+            backdrop-filter: blur(10px); /* 毛玻璃效果 */
+            -webkit-backdrop-filter: blur(10px); /* Safari浏览器兼容 */
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1); /* 添加边框增强效果 */
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); /* 添加阴影增强立体感 */
+        }
+        
+        #zoom-slider {
+            width: 300px;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.5);
+            outline: none;
+            border-radius: 3px;
+        }
+        
+        #zoom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        #zoom-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: #3498db;
+        }
+        
+        .zoom-label {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        /* 图片详情卡片样式 - 参考设计 */
+        .image-card {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .image-card.active {
+            display: flex;
+        }
+        
+        .image-card-content {
+            display: flex;
+            width: 100%;
+            max-width: 1000px;
+            height: 600px;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #ffffff47;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        /* 图片展示区 */
+        .image-display {
+            flex: 1;
+            height: 100%;
+            position: relative;
+        }
+        
+        .image-display img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* 信息弹窗区域 */
+        .image-info {
+            width: 300px;
+            height: 100%;
+            background: #121212;
+            color: #fff;
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        /* 关闭按钮 */
+        .close-btn {
+            position: relative;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            margin-bottom: 24px;
+        }
+        
+        .close-btn:hover {
+            opacity: 0.7;
+        }
+        
+        .close-btn::before, .close-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 16px;
+            height: 1px;
+            background: #8ab4f8;
+            transform: translateY(-50%) rotate(45deg);
+        }
+        
+        .close-btn::after {
+            transform: translateY(-50%) rotate(-45deg);
+        }
+        
+        /* 标签（TECH） */
+        .image-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(66, 133, 244, 0.2);
+            color: #8ab4f8;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        
+        
+        .image-tag::after {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 12px;
+            width: 2px;
+            height: 4px;
+            border-right: 1px solid #8ab4f8;
+            border-bottom: 1px solid #8ab4f8;
+            transform: rotate(45deg);
+        }
+        
+        /* 标签行容器 */
+        .label-row {
+            display: flex;
+            align-items: center;
+        }
+        
+        /* 确保关闭按钮与标签垂直居中对齐 */
+        .close-btn {
+            vertical-align: middle;
+        }
+        
+        /* 标题区域 */
+        .image-info h3 {
+            margin: 0 0 16px 0;
+            font-size: 28px;
+            font-weight: 600;
+            line-height: 1.2;
+            color: white;
+        }
+        
+        /* 标签文本 */
+        .label {
+            font-size: 11px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+        }
+        
+        /* SVG 图标 */
+        .label svg {
+            margin-right: 8px;
+        }
+        
+        /* 描述 */
+        .image-description {
+            font-size: 14px;
+            color: #e0e0e0;
+            line-height: 1.5;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #282828;
+            margin-bottom: 24px;
+        }
+        
+        /* 元信息 */
+        .image-meta {
+            display: flex;
+            justify-content: flex-start;
+            gap: 24px;
+            margin-bottom: 0;
+            font-size: 14px;
+            color: #e0e0e0;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-icon {
+            width: 16px;
+            height: 16px;
+            color: #888;
+        }
+        
+        /* 打开原图按钮 */
+        .open-original-btn {
+            width: 100%;
+            height: 48px;
+            background: #fff;
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+        
+        .open-original-btn:hover {
+            background: #f0f0f0;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .image-card-content {
+                flex-direction: column;
+                height: auto;
+                max-height: 90vh;
+            }
+            
+            .image-display {
+                height: 400px;
+            }
+            
+            .image-info {
+                width: 100%;
+                height: auto;
+            }
+        }
+        
         /* 响应式设计 */
         @media (max-width: 768px) {
             .hero-title {
@@ -421,27 +757,17 @@
                 margin-top: 100vh;
             }
             
-            .category-tabs {
-                gap: 1rem;
+            #3d-sphere-container {
+                height: calc(100vh - 60px); /* 减去导航栏高度 */
             }
             
-            .category-tab {
-                font-size: 1rem;
-                padding: 0.8rem 1rem;
+            #zoom-slider {
+                width: 200px;
             }
             
-            .destination-grid,
-            .recipe-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .timeline-images {
-                flex-direction: column;
-            }
-            
-            .timeline-images img {
-                width: 100%;
-                height: 120px;
+            .image-card-content {
+                width: 95%;
+                margin: 20px;
             }
         }
     </style>
@@ -510,245 +836,717 @@
     <!-- 页面标题区 -->
     <section class="hero-section">
         <h1 class="hero-title">在路上，在烟火里</h1>
-        <p class="hero-subtitle">旅行见世界，骑行享自由，做饭暖生活</p>
+        <p class="hero-subtitle">旅行见世界，骑行享自由，美食暖生活</p>
     </section>
     
     <!-- 页面主体内容 -->
     <div class="main-content">
-        <!-- 内容分类切换区 - 放在main-content内部，用于粘性定位 -->
-        <section class="category-tabs-section">
-            <div class="category-tabs">
-                <button class="category-tab active" data-category="travel">旅行</button>
-                <button class="category-tab" data-category="cooking">做饭</button>
-                <button class="category-tab" data-category="cycling">骑行</button>
+        <!-- 3D球体容器 -->
+        <div id="3d-sphere-container">
+            <!-- Three.js渲染器将挂载到这里 -->
+            <div id="sphere-canvas"></div>
+            
+            <!-- 进度条控制 -->
+            <div id="zoom-control">
+                <div class="zoom-label">-</div>
+                <input type="range" id="zoom-slider" min="0.5" max="2" step="0.1" value="1">
+                <div class="zoom-label">+</div>
             </div>
-        </section>
+            
+            <!-- 加载状态 -->
+            <div id="loading">加载中...</div>
+        </div>
         
-        <!-- 核心内容展示区 -->
-        <section class="content-section">
-        <!-- 旅行板块 -->
-        <div class="category-content active" id="travel">
-            <div class="destination-grid">
-                <div class="destination-card" onclick="window.location.href='#.html?destination=青海湖'" style="cursor: pointer;">
-                    <div class="destination-image">
-                        <img src="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202512011017747.jpg" alt="青海湖">
-                    </div>
-                    <div class="destination-info">
-                        <h3 class="destination-title">十里琅珰</h3>
-                        <p class="destination-subtitle">2023.05 | 徒步</p>
+        <!-- 图片详情卡片 -->
+        <div id="image-card" class="image-card">
+            <div class="image-card-content">
+                <!-- 图片展示区 -->
+                <div class="image-display">
+                    <img id="image-detail" src="" alt="">
+                </div>
+                
+                <!-- 信息弹窗区域 -->
+                <div class="image-info">
+                    <!-- 内容区域 -->
+                    <div class="content">
+                        <!-- 标题区域 -->
+                        <div class="title-section">
+                            <div class="label-row">
+                                
+                                <div class="image-tag">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tag" aria-hidden="true">
+                                        <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"></path>
+                                        <circle cx="7.5" cy="7.5" r=".5" fill="currentColor"></circle>
+                                    </svg>
+                                    TECH
+                                </div>
+                                <div class="close-btn" onclick="closeImageCard()"></div>
+                            </div>
+                            <div class="label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-type" aria-hidden="true">
+                                    <path d="M12 4v16"></path>
+                                    <path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2"></path>
+                                    <path d="M9 20h6"></path>
+                                </svg>
+                                <span>Title</span>
+                            </div>
+                            <h3 id="image-title"></h3>
+                        </div>
                         
-                    </div>
-                </div>
-                
-                <div class="destination-card">
-                    <div class="destination-image">
-                        <img src="https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=600&h=400&fit=crop&q=80" alt="大理古城">
-                    </div>
-                    <div class="destination-info">
-                        <h3 class="destination-title">大理古城</h3>
-                        <p class="destination-subtitle">2023.10 | 慢游古城・品美食</p>
+                        <!-- 描述 -->
+                        <div class="label">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-text-align-start" aria-hidden="true">
+                                <path d="M21 5H3"></path>
+                                <path d="M15 12H3"></path>
+                                <path d="M17 19H3"></path>
+                            </svg>
+                            DESCRIPTION
+                        </div>
+                        <p class="image-description" id="image-description"></p>
                         
-                    </div>
-                </div>
-                
-                
-        
-        <!-- 骑行板块 -->
-        <div class="category-content" id="cycling">
-            <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-dot">1</div>
-                    <div class="timeline-content">
-                        <div class="timeline-date">2024.05</div>
-                        <h3 class="timeline-title">城市绕城骑行</h3>
-                        <div class="timeline-images">
-                            <img src="https://images.unsplash.com/photo-1556656793-08538906a9f8?w=600&h=400&fit=crop&q=80" alt="出发照">
-                            <img src="https://images.unsplash.com/photo-1507035895480-2271c049e2d0?w=600&h=400&fit=crop&q=80" alt="路线风景">
+                        <!-- 日期+位置 -->
+                        <div class="image-meta">
+                            <div class="meta-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar info-icon" aria-hidden="true"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg>
+                                Date
+                            </div>
+                            <div class="meta-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin info-icon" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                Location
+                            </div>
                         </div>
-                        <p class="timeline-info">全程 52km | 逆风爬坡，解锁新视角。沿着城市的边缘骑行，发现了许多平时忽略的美景。</p>
                     </div>
-                </div>
-                
-                <div class="timeline-item">
-                    <div class="timeline-dot">2</div>
-                    <div class="timeline-content">
-                        <div class="timeline-date">2023.10</div>
-                        <h3 class="timeline-title">近郊山道骑行</h3>
-                        <div class="timeline-images">
-                            <img src="https://images.unsplash.com/photo-1536252374814-7223e1116229?w=600&h=400&fit=crop&q=80" alt="山道风景">
-                            <img src="https://images.unsplash.com/photo-1587145841186-41178063a691?w=600&h=400&fit=crop&q=80" alt="终点合影">
-                        </div>
-                        <p class="timeline-info">全程 45km | 挑战陡坡，享受下坡的快感。在山间呼吸新鲜空气，感受大自然的魅力。</p>
-                    </div>
-                </div>
-                
-                <div class="timeline-item">
-                    <div class="timeline-dot">3</div>
-                    <div class="timeline-content">
-                        <div class="timeline-date">2023.06</div>
-                        <h3 class="timeline-title">沿海公路骑行</h3>
-                        <div class="timeline-images">
-                            <img src="https://images.unsplash.com/photo-1521223890158-f9f7c3d5d504?w=600&h=400&fit=crop&q=80" alt="沿海公路">
-                            <img src="https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?w=600&h=400&fit=crop&q=80" alt="海边休息">
-                        </div>
-                        <p class="timeline-info">全程 68km | 吹着海风，听着海浪声骑行。沿途的海景美不胜收，让人心情愉悦。</p>
-                    </div>
+                    
+                    <!-- 底部按钮 -->
+                    <button class="open-original-btn">Open Original</button>
                 </div>
             </div>
         </div>
-        
-        <!-- 做饭板块 -->
-        <div class="category-content" id="cooking">
-            <div class="recipe-grid">
-                <div class="recipe-card">
-                    <div class="recipe-image">
-                        <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&h=400&fit=crop&q=80" alt="番茄牛腩">
-                    </div>
-                    <div class="recipe-info">
-                        <h3 class="recipe-name">番茄牛腩</h3>
-                        <div class="recipe-meta">
-                            <span>耗时：30 分钟</span>
-                            <span>难度：入门</span>
-                        </div>
-                        <p class="recipe-description">零失败番茄牛腩，汤汁泡饭绝了。酸甜可口，营养丰富，适合家庭日常烹饪。</p>
-                        <button class="toggle-steps" onclick="toggleSteps(this)">查看步骤</button>
-                        <div class="recipe-steps">
-                            <div class="steps-content">
-                                <div class="step-item">
-                                    <div class="step-title">步骤 1：准备食材</div>
-                                    <p>牛腩切块，番茄去皮切块，准备葱姜蒜。</p>
-                                    <div class="step-images">
-                                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&h=200&fit=crop&q=80" alt="切牛腩">
-                                        <img src="https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=200&h=200&fit=crop&q=80" alt="切番茄">
-                                    </div>
-                                </div>
-                                <div class="step-item">
-                                    <div class="step-title">步骤 2：烹饪过程</div>
-                                    <p>牛腩焯水后，用油煸炒，加入番茄炖煮 20 分钟。</p>
-                                    <div class="step-images">
-                                        <img src="https://images.unsplash.com/photo-1563245372-2203c1080969?w=200&h=200&fit=crop&q=80" alt="煸炒牛腩">
-                                        <img src="https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=200&h=200&fit=crop&q=80" alt="炖煮">
-                                    </div>
-                                </div>
-                                <div class="step-item">
-                                    <div class="step-title">步骤 3：完成</div>
-                                    <p>加入盐和糖调味，撒上葱花即可出锅。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="recipe-card">
-                    <div class="recipe-image">
-                        <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&h=400&fit=crop&q=80" alt="手作披萨">
-                    </div>
-                    <div class="recipe-info">
-                        <h3 class="recipe-name">手作披萨</h3>
-                        <div class="recipe-meta">
-                            <span>耗时：45 分钟</span>
-                            <span>难度：进阶</span>
-                        </div>
-                        <p class="recipe-description">自制披萨底，口感酥脆，配料丰富。可以根据自己的喜好添加各种 toppings。</p>
-                        <button class="toggle-steps" onclick="toggleSteps(this)">查看步骤</button>
-                        <div class="recipe-steps">
-                            <div class="steps-content">
-                                <div class="step-item">
-                                    <div class="step-title">步骤 1：制作披萨底</div>
-                                    <p>面粉、酵母、水混合揉成面团，发酵 30 分钟。</p>
-                                    <div class="step-images">
-                                        <img src="https://images.unsplash.com/photo-1517666747211-22b8f1007f85?w=200&h=200&fit=crop&q=80" alt="揉面团">
-                                        <img src="https://images.unsplash.com/photo-1543512214-318c75c84462?w=200&h=200&fit=crop&q=80" alt="发酵面团">
-                                    </div>
-                                </div>
-                                <div class="step-item">
-                                    <div class="step-title">步骤 2：添加配料</div>
-                                    <p>擀平面团，涂抹番茄酱，撒上芝士和各种配料。</p>
-                                    <div class="step-images">
-                                        <img src="https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=200&h=200&fit=crop&q=80" alt="擀面团">
-                                        <img src="https://images.unsplash.com/photo-1593508512255-86ab42a8e620?w=200&h=200&fit=crop&q=80" alt="添加配料">
-                                    </div>
-                                </div>
-                                <div class="step-item">
-                                    <div class="step-title">步骤 3：烤制</div>
-                                    <p>烤箱预热 200°C，烤制 15-20 分钟即可。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="recipe-card">
-                    <div class="recipe-image">
-                        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop&q=80" alt="清蒸鱼">
-                    </div>
-                    <div class="recipe-info">
-                        <h3 class="recipe-name">清蒸鱼</h3>
-                        <div class="recipe-meta">
-                            <span>耗时：20 分钟</span>
-                            <span>难度：入门</span>
-                        </div>
-                        <p class="recipe-description">鲜嫩多汁的清蒸鱼，保持了鱼的原汁原味。营养健康，适合老人和小孩。</p>
-                        <button class="toggle-steps" onclick="toggleSteps(this)">查看步骤</button>
-                        <div class="recipe-steps">
-                            <div class="steps-content">
-                                <div class="step-item">
-                                    <div class="step-title">步骤 1：准备鱼</div>
-                                    <p>鱼处理干净，在鱼身上划几刀，撒上葱姜蒜。</p>
-                                    <div class="step-images">
-                                        <img src="https://images.unsplash.com/photo-1516726817505-f5ed825624d8?w=200&h=200&fit=crop&q=80" alt="处理鱼">
-                                        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop&q=80" alt="准备葱姜蒜">
-                                    </div>
-                                </div>
-                                <div class="step-item">
-                                    <div class="step-title">步骤 2：清蒸</div>
-                                    <p>水烧开后，将鱼放入蒸锅，大火蒸 8-10 分钟。</p>
-                                </div>
-                                <div class="step-item">
-                                    <div class="step-title">步骤 3：调味</div>
-                                    <p>取出鱼，倒掉多余的汤汁，淋上蒸鱼豉油，浇上热油即可。</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
     </div>
     
     <script>
-        // 加载通用导航栏
-        fetch('assets/components/navbar.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('navbar-container').innerHTML = data;
-            })
-            .catch(error => console.error('加载导航栏失败:', error));
-        
-        // 分类切换功能
-        const categoryTabs = document.querySelectorAll('.category-tab');
-        const categoryContents = document.querySelectorAll('.category-content');
-        
-        categoryTabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                // 移除所有活跃状态
-                categoryTabs.forEach(t => t.classList.remove('active'));
-                categoryContents.forEach(c => c.classList.remove('active'));
-                
-                // 添加当前活跃状态
-                const category = tab.getAttribute('data-category');
-                tab.classList.add('active');
-                document.getElementById(category).classList.add('active');
-            });
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 加载通用导航栏
+            fetch('assets/components/navbar.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('navbar-container').innerHTML = data;
+                })
+                .catch(error => console.error('加载导航栏失败:', error));
         });
         
-        // 步骤折叠功能
-        function toggleSteps(button) {
-            button.classList.toggle('active');
-            const steps = button.nextElementSibling;
-            steps.classList.toggle('active');
+        // 3D球体功能实现
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化Three.js场景
+            init3DSphere();
+        });
+        
+        // 初始化3D球体
+        function init3DSphere() {
+            // 场景设置
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000000);
+            
+            // 相机设置
+            const camera = new THREE.PerspectiveCamera(
+                75,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+            camera.position.z = 3;
+            
+            // 渲染器设置
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight - 80); // 减去导航栏高度
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.getElementById('sphere-canvas').appendChild(renderer.domElement);
+            
+            // 球体设置
+            const sphereGroup = new THREE.Group();
+            scene.add(sphereGroup);
+            
+            // 创建球体骨架（不可见）
+            const sphereGeometry = new THREE.IcosahedronGeometry(1, 2);
+            const sphereMaterial = new THREE.MeshBasicMaterial({
+                color: 0x000000,
+                wireframe: false,
+                visible: false
+            });
+            const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+            sphereGroup.add(sphere);
+            
+            // 图片数据
+            const images = [
+                { url: '#', title: '十里琅珰', description: '2023.05 | 徒步', location: '杭州', date: '2023-05-15' },
+                { url: 'https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202512101857366.png', title: '青山湖', description: '2023.6 | 环湖骑行', location: '临安', date: '2023-06-20' },
+                { url: 'https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202512011017747.jpg', title: '十里琅珰', description: '2023.05 | 徒步', location: '杭州', date: '2023-05-15' },
+                { url: 'https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202512101857366.png', title: '青山湖', description: '2023.6 | 环湖骑行', location: '临安', date: '2023-06-20' },
+                { url: 'https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202512011017747.jpg', title: '十里琅珰', description: '2023.05 | 徒步', location: '杭州', date: '2023-05-15' },
+                { url: 'https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202512101857366.png', title: '青山湖', description: '2023.6 | 环湖骑行', location: '临安', date: '2023-06-20' }
+                 ]
+            // 存储图片精灵的数组
+            const pictureSprites = [];
+            
+            // 加载并创建图片精灵
+            function loadImages() {
+                const totalCount = 100; // 总数量设置为100，增加密度
+                const maxImages = 11; // 最多使用11张真实图片
+                let loadedCount = 0;
+                
+                // 1. 先创建所有默认圆形，这样用户一开始就能看到完整的球体
+                for (let i = 0; i < totalCount; i++) {
+                    // 直接在循环中创建默认圆形
+                    const meshSize = 0.15;
+                    const geometry = new THREE.PlaneGeometry(meshSize, meshSize);
+                    
+                    // 创建圆形蒙版
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const size = 256;
+                    canvas.width = size;
+                    canvas.height = size;
+                    
+                    // 绘制灰色圆形
+                    ctx.fillStyle = '#222835';
+                    ctx.beginPath();
+                    ctx.arc(size / 2, size / 2, size / 2 - 4, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 绘制边框
+                    ctx.strokeStyle = '#222835';
+                    ctx.lineWidth = 4;
+                    ctx.beginPath();
+                    ctx.arc(size / 2, size / 2, size / 2 - 2, 0, Math.PI * 2);
+                    ctx.stroke();
+                    
+                    // 创建材质
+                    const material = new THREE.MeshBasicMaterial({
+                        map: new THREE.CanvasTexture(canvas),
+                        transparent: true,
+                        side: THREE.DoubleSide
+                    });
+                    
+                    // 创建网格
+                    const mesh = new THREE.Mesh(geometry, material);
+                    
+                    // 计算球体表面位置
+                    const phi = Math.acos(-1 + (2 * i) / totalCount);
+                    const theta = Math.sqrt(totalCount * Math.PI) * phi;
+                    
+                    const x = Math.cos(theta) * Math.sin(phi);
+                    const y = Math.sin(theta) * Math.sin(phi);
+                    const z = Math.cos(phi);
+                    
+                    // 设置位置
+                    mesh.position.set(x, y, z);
+                    
+                    // 旋转平面，使其法线指向球体中心（贴合球面）
+                    mesh.lookAt(0, 0, 0);
+                    
+                    // 添加到场景
+                    sphereGroup.add(mesh);
+                    
+                    // 存储网格数据
+                    pictureSprites.push({
+                        sprite: mesh,
+                        data: null,
+                        position: new THREE.Vector3(x, y, z)
+                    });
+                }
+                
+                // 2. 然后加载真实图片，替换对应的默认圆形
+                const imagesToLoad = images.slice(0, maxImages);
+                
+                imagesToLoad.forEach((imageData, index) => {
+                    console.log(`开始加载图片 ${index + 1}/${imagesToLoad.length}: ${imageData.url}`);
+                    const textureLoader = new THREE.TextureLoader();
+                    textureLoader.load(
+                        imageData.url,
+                        function(texture) {
+                            console.log(`图片加载成功 ${index + 1}/${imagesToLoad.length}: ${imageData.url}`);
+                            
+                            // 获取旧网格和其位置
+                            const oldItem = pictureSprites[index];
+                            const oldMesh = oldItem.sprite;
+                            const oldPosition = oldItem.position;
+                            
+                            console.log(`旧网格位置: (${oldPosition.x.toFixed(2)}, ${oldPosition.y.toFixed(2)}, ${oldPosition.z.toFixed(2)})`);
+                            
+                            // 从场景中移除旧网格
+                            sphereGroup.remove(oldMesh);
+                            console.log(`已移除旧网格 ${index}`);
+                            
+                            // 创建平面几何体
+                            const meshSize = 0.15;
+                            const geometry = new THREE.PlaneGeometry(meshSize, meshSize);
+                            
+                            // 创建圆形蒙版
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+                            const size = 256;
+                            canvas.width = size;
+                            canvas.height = size;
+                            
+                            // 绘制圆形背景
+                            ctx.fillStyle = '#222835';
+                            ctx.beginPath();
+                            ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+                            ctx.fill();
+                            
+                            // 绘制图片
+                            ctx.save();
+                            ctx.beginPath();
+                            ctx.arc(size / 2, size / 2, size / 2 - 4, 0, Math.PI * 2);
+                            ctx.clip();
+                            ctx.drawImage(texture.image, 0, 0, size, size);
+                            ctx.restore();
+                            
+                            // 绘制边框
+                            ctx.strokeStyle = '#3498db';
+                            ctx.lineWidth = 4;
+                            ctx.beginPath();
+                            ctx.arc(size / 2, size / 2, size / 2 - 2, 0, Math.PI * 2);
+                            ctx.stroke();
+                            
+                            // 创建材质
+                            const material = new THREE.MeshBasicMaterial({
+                                map: new THREE.CanvasTexture(canvas),
+                                transparent: true,
+                                side: THREE.DoubleSide
+                            });
+                            
+                            // 创建网格
+                            const mesh = new THREE.Mesh(geometry, material);
+                            
+                            // 使用与旧圆形相同的位置
+                            mesh.position.copy(oldPosition);
+                            console.log(`新网格位置: (${mesh.position.x.toFixed(2)}, ${mesh.position.y.toFixed(2)}, ${mesh.position.z.toFixed(2)})`);
+                            
+                            // 旋转平面，使其法线指向球体中心（贴合球面）
+                            mesh.lookAt(0, 0, 0);
+                            
+                            // 添加到场景
+                            sphereGroup.add(mesh);
+                            console.log(`已添加新网格 ${index} 到场景`);
+                            
+                            // 替换pictureSprites数组中对应索引的元素
+                            pictureSprites[index] = {
+                                sprite: mesh,
+                                data: imageData,
+                                position: oldPosition.clone()
+                            };
+                            console.log(`已替换pictureSprites数组中的元素 ${index}`);
+                            
+                            loadedCount++;
+                            console.log(`已完成 ${loadedCount}/${imagesToLoad.length} 张图片加载`);
+                            
+                            if (loadedCount === imagesToLoad.length) {
+                                // 所有图片加载完成，隐藏加载提示
+                                document.getElementById('loading').style.display = 'none';
+                                console.log('所有图片加载完成，隐藏加载提示');
+                            }
+                        },
+                        undefined,
+                        function(error) {
+                            console.error(`图片加载失败 ${index + 1}/${imagesToLoad.length}:`, error);
+                            loadedCount++;
+                            if (loadedCount === imagesToLoad.length) {
+                                // 所有图片加载完成，隐藏加载提示
+                                document.getElementById('loading').style.display = 'none';
+                            }
+                        }
+                    );
+                });
+            }
+            
+            // 创建圆形图片网格（贴合球面）
+            function createPictureSprite(texture, imageData, index) {
+                // 计算网格大小
+                const meshSize = 0.15; // 减小大小，增加密度
+                
+                // 创建圆形蒙版
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const size = 256;
+                canvas.width = size;
+                canvas.height = size;
+                
+                // 绘制圆形背景
+                ctx.fillStyle = '#1b212e';
+                ctx.beginPath();
+                ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 绘制图片
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(size / 2, size / 2, size / 2 - 4, 0, Math.PI * 2);
+                ctx.clip();
+                ctx.drawImage(texture.image, 0, 0, size, size);
+                ctx.restore();
+                
+                // 绘制边框
+                ctx.strokeStyle = '#3498db';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.arc(size / 2, size / 2, size / 2 - 2, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                // 创建平面几何体
+                const geometry = new THREE.PlaneGeometry(meshSize, meshSize);
+                
+                // 创建材质
+                const material = new THREE.MeshBasicMaterial({
+                    map: new THREE.CanvasTexture(canvas),
+                    transparent: true,
+                    side: THREE.DoubleSide
+                });
+                
+                // 创建网格
+                const mesh = new THREE.Mesh(geometry, material);
+                
+                // 计算球体表面位置
+                const totalCount = 50;
+                const phi = Math.acos(-1 + (2 * index) / totalCount);
+                const theta = Math.sqrt(totalCount * Math.PI) * phi;
+                
+                const x = Math.cos(theta) * Math.sin(phi);
+                const y = Math.sin(theta) * Math.sin(phi);
+                const z = Math.cos(phi);
+                
+                // 设置位置
+                mesh.position.set(x, y, z);
+                
+                // 旋转平面，使其法线指向球体中心（贴合球面）
+                mesh.lookAt(0, 0, 0);
+                
+                // 添加到场景
+                sphereGroup.add(mesh);
+                
+                // 存储网格数据
+                pictureSprites.push({
+                    sprite: mesh, // 保持属性名一致，方便后续代码使用
+                    data: imageData,
+                    position: new THREE.Vector3(x, y, z)
+                });
+            }
+            
+            // 创建默认圆形网格（贴合球面）
+            function createDefaultCircle(index) {
+                // 计算网格大小
+                const meshSize = 0.15; // 减小大小，增加密度
+                
+                // 创建圆形蒙版
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const size = 256;
+                canvas.width = size;
+                canvas.height = size;
+                
+                // 绘制灰色圆形
+                ctx.fillStyle = '#cccccc';
+                ctx.beginPath();
+                ctx.arc(size / 2, size / 2, size / 2 - 4, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 绘制边框
+                ctx.strokeStyle = '#999999';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.arc(size / 2, size / 2, size / 2 - 2, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                // 创建平面几何体
+                const geometry = new THREE.PlaneGeometry(meshSize, meshSize);
+                
+                // 创建材质
+                const material = new THREE.MeshBasicMaterial({
+                    map: new THREE.CanvasTexture(canvas),
+                    transparent: true,
+                    side: THREE.DoubleSide
+                });
+                
+                // 创建网格
+                const mesh = new THREE.Mesh(geometry, material);
+                
+                // 计算球体表面位置
+                const totalCount = 50;
+                const phi = Math.acos(-1 + (2 * index) / totalCount);
+                const theta = Math.sqrt(totalCount * Math.PI) * phi;
+                
+                const x = Math.cos(theta) * Math.sin(phi);
+                const y = Math.sin(theta) * Math.sin(phi);
+                const z = Math.cos(phi);
+                
+                // 设置位置
+                mesh.position.set(x, y, z);
+                
+                // 旋转平面，使其法线指向球体中心（贴合球面）
+                mesh.lookAt(0, 0, 0);
+                
+                // 添加到场景
+                sphereGroup.add(mesh);
+                
+                // 存储网格数据
+                pictureSprites.push({
+                    sprite: mesh, // 保持属性名一致，方便后续代码使用
+                    data: null,
+                    position: new THREE.Vector3(x, y, z)
+                });
+            }
+            
+            // 鼠标/触摸控制
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+            
+            // 鼠标事件
+            renderer.domElement.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+            
+            renderer.domElement.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+                
+                const deltaMove = {
+                    x: e.clientX - previousMousePosition.x,
+                    y: e.clientY - previousMousePosition.y
+                };
+                
+                // 旋转球体
+                sphereGroup.rotation.y += deltaMove.x * 0.01;
+                sphereGroup.rotation.x += deltaMove.y * 0.01;
+                
+                // 限制X轴旋转角度
+                sphereGroup.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, sphereGroup.rotation.x));
+                
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+            
+            renderer.domElement.addEventListener('mouseup', function() {
+                isDragging = false;
+            });
+            
+            renderer.domElement.addEventListener('mouseleave', function() {
+                isDragging = false;
+            });
+            
+            // 触摸事件
+            renderer.domElement.addEventListener('touchstart', function(e) {
+                if (e.touches.length === 1) {
+                    isDragging = true;
+                    previousMousePosition = {
+                        x: e.touches[0].clientX,
+                        y: e.touches[0].clientY
+                    };
+                }
+            });
+            
+            renderer.domElement.addEventListener('touchmove', function(e) {
+                if (!isDragging || e.touches.length !== 1) return;
+                
+                const deltaMove = {
+                    x: e.touches[0].clientX - previousMousePosition.x,
+                    y: e.touches[0].clientY - previousMousePosition.y
+                };
+                
+                sphereGroup.rotation.y += deltaMove.x * 0.01;
+                sphereGroup.rotation.x += deltaMove.y * 0.01;
+                
+                sphereGroup.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, sphereGroup.rotation.x));
+                
+                previousMousePosition = {
+                    x: e.touches[0].clientX,
+                    y: e.touches[0].clientY
+                };
+            });
+            
+            renderer.domElement.addEventListener('touchend', function() {
+                isDragging = false;
+            });
+            
+            // 进度条控制缩放 - 平滑缩放
+            const zoomSlider = document.getElementById('zoom-slider');
+            let currentScale = 1.0;
+            let targetScale = 1.0;
+            const scaleSpeed = 0.1; // 缩放平滑度
+            
+            zoomSlider.addEventListener('input', function() {
+                targetScale = parseFloat(this.value);
+            });
+            
+            // 在animate函数中添加平滑缩放逻辑
+            
+            // 点击图片展开卡片
+            renderer.domElement.addEventListener('click', function(e) {
+                // 计算鼠标位置
+                const rect = renderer.domElement.getBoundingClientRect();
+                const mouse = new THREE.Vector2();
+                mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+                
+                // 创建射线投射器
+                const raycaster = new THREE.Raycaster();
+                raycaster.setFromCamera(mouse, camera);
+                
+                // 检测碰撞的精灵
+                const intersects = raycaster.intersectObjects(pictureSprites.map(ps => ps.sprite));
+                
+                if (intersects.length > 0) {
+                    // 找到被点击的精灵
+                    const clickedSprite = intersects[0].object;
+                    const pictureData = pictureSprites.find(ps => ps.sprite === clickedSprite);
+                    
+                    if (pictureData && pictureData.data) {
+                        // 只有当pictureData.data存在时，才显示图片卡片
+                        openImageCard(pictureData.data);
+                    }
+                }
+            });
+            
+            // 球体自转
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                // 球体缓慢自转
+                if (!isDragging) {
+                    sphereGroup.rotation.y += 0.005;
+                }
+                
+                // 添加平滑缩放逻辑
+                if (Math.abs(currentScale - targetScale) > 0.01) {
+                    currentScale += (targetScale - currentScale) * scaleSpeed;
+                    sphereGroup.scale.set(currentScale, currentScale, currentScale);
+                } else {
+                    // 当差异很小时，直接设置为目标值，避免抖动
+                    currentScale = targetScale;
+                    sphereGroup.scale.set(currentScale, currentScale, currentScale);
+                }
+                
+                renderer.render(scene, camera);
+            }
+            
+            // 窗口大小调整
+            window.addEventListener('resize', function() {
+                camera.aspect = window.innerWidth / (window.innerHeight - 80);
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight - 80);
+            });
+            
+            // 启动加载图片
+            loadImages();
+            
+            // 启动动画
+            animate();
         }
+        
+        // 打开图片详情卡片
+        function openImageCard(imageData) {
+            document.getElementById('image-title').textContent = imageData.title;
+            document.getElementById('image-detail').src = imageData.url;
+            document.getElementById('image-description').textContent = imageData.description;
+            
+            // 更新日期和位置信息
+            const metaItems = document.querySelectorAll('.meta-item');
+            if (metaItems.length > 0) {
+                // 移除现有图标
+                const existingCalendarIcon = metaItems[0].querySelector('.lucide-calendar');
+                if (existingCalendarIcon) {
+                    existingCalendarIcon.remove();
+                }
+                
+                // 更新文本并添加图标
+                metaItems[0].textContent = imageData.date;
+                const calendarIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                calendarIcon.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+                calendarIcon.setAttribute('width', '14');
+                calendarIcon.setAttribute('height', '14');
+                calendarIcon.setAttribute('viewBox', '0 0 24 24');
+                calendarIcon.setAttribute('fill', 'none');
+                calendarIcon.setAttribute('stroke', 'currentColor');
+                calendarIcon.setAttribute('stroke-width', '2');
+                calendarIcon.setAttribute('stroke-linecap', 'round');
+                calendarIcon.setAttribute('stroke-linejoin', 'round');
+                calendarIcon.className = 'lucide lucide-calendar info-icon';
+                calendarIcon.setAttribute('aria-hidden', 'true');
+                
+                const path1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path1.setAttribute('d', 'M8 2v4');
+                const path2 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path2.setAttribute('d', 'M16 2v4');
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('width', '18');
+                rect.setAttribute('height', '18');
+                rect.setAttribute('x', '3');
+                rect.setAttribute('y', '4');
+                rect.setAttribute('rx', '2');
+                const path3 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path3.setAttribute('d', 'M3 10h18');
+                
+                calendarIcon.appendChild(path1);
+                calendarIcon.appendChild(path2);
+                calendarIcon.appendChild(rect);
+                calendarIcon.appendChild(path3);
+                
+                metaItems[0].insertBefore(calendarIcon, metaItems[0].firstChild);
+            }
+            if (metaItems.length > 1) {
+                // 移除现有图标
+                const existingLocationIcon = metaItems[1].querySelector('.lucide-map-pin');
+                if (existingLocationIcon) {
+                    existingLocationIcon.remove();
+                }
+                
+                // 更新文本并添加图标
+                metaItems[1].textContent = imageData.location;
+                const locationIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                locationIcon.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+                locationIcon.setAttribute('width', '14');
+                locationIcon.setAttribute('height', '14');
+                locationIcon.setAttribute('viewBox', '0 0 24 24');
+                locationIcon.setAttribute('fill', 'none');
+                locationIcon.setAttribute('stroke', 'currentColor');
+                locationIcon.setAttribute('stroke-width', '2');
+                locationIcon.setAttribute('stroke-linecap', 'round');
+                locationIcon.setAttribute('stroke-linejoin', 'round');
+                locationIcon.className = 'lucide lucide-map-pin info-icon';
+                locationIcon.setAttribute('aria-hidden', 'true');
+                
+                const path1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path1.setAttribute('d', 'M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0');
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', '12');
+                circle.setAttribute('cy', '10');
+                circle.setAttribute('r', '3');
+                
+                locationIcon.appendChild(path1);
+                locationIcon.appendChild(circle);
+                
+                metaItems[1].insertBefore(locationIcon, metaItems[1].firstChild);
+            }
+            
+            document.getElementById('image-card').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // 关闭图片详情卡片
+        function closeImageCard() {
+            document.getElementById('image-card').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        // 为打开原图按钮添加事件监听器
+        document.addEventListener('DOMContentLoaded', function() {
+            const openBtn = document.querySelector('.open-original-btn');
+            if (openBtn) {
+                openBtn.addEventListener('click', function() {
+                    const currentImage = document.getElementById('image-detail').src;
+                    window.open(currentImage, '_blank');
+                });
+            }
+        });
     </script>
 </body>
 </html>

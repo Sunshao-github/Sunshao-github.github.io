@@ -98,8 +98,313 @@ function checkNavigationLoaded() {
     }
 }
 
+// 创建自定义模态弹窗的HTML结构
+function createPasswordModal() {
+    // 检查模态框是否已存在
+    if (document.getElementById('password-modal')) {
+        return;
+    }
+    
+    // 创建模态框元素
+    const modalHTML = `
+        <div id="password-modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 9999; display: none;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 30px; border-radius: 8px; max-width: 400px;">
+                <h3 style="margin-top: 0; color: #333; text-align: left;">原型预览密码</h3>
+                <div style="display: flex; justify-content: center; gap: 15px; margin: 20px;">
+                    <div style="width: 60px; height: 60px; border: 1px solid #ddd; border-radius: 6px; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; color: #333; background-color: #f9f9f9;">I</div>
+                    <div style="width: 60px; height: 60px; border: 1px solid #ddd; border-radius: 6px; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; color: #333; background-color: #f9f9f9;">2</div>
+                    <div style="width: 60px; height: 60px; border: 1px solid #ddd; border-radius: 6px; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; color: #333; background-color: #f9f9f9;">J</div>
+                    <div style="width: 60px; height: 60px; border: 1px solid #ddd; border-radius: 6px; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; color: #333; background-color: #f9f9f9;">P</div>
+                </div>
+                <div style="display: flex; justify-content: flex-end;">
+                    <button id="copy-password-btn" style="background-color: #3B71FE; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">复制</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // 添加到页面
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+// 定义全局变量存储当前模态框实例
+let currentModal = null;
+
+// 打开原型预览 - 项目1
+function openPrototypePreview() {
+    // 创建模态框（如果不存在）
+    createPasswordModal();
+    
+    const modal = document.getElementById('password-modal');
+    const copyBtn = document.getElementById('copy-password-btn');
+    const password = 'I2JP';
+    const prototypeUrl = 'https://lanhuapp.com/link/#/invite?sid=qXrA1na7';
+    
+    // 更新模态框中的密码显示
+    updateModalPassword(password);
+    
+    // 保存当前模态框实例
+    currentModal = modal;
+    
+    // 显示模态框
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    
+    // 移除所有现有的点击监听器
+    copyBtn.replaceWith(copyBtn.cloneNode(true));
+    
+    // 获取新的复制按钮
+    const newCopyBtn = document.getElementById('copy-password-btn');
+    
+    // 添加新的点击监听器
+    newCopyBtn.addEventListener('click', function() {
+        // 复制密码到剪贴板
+        navigator.clipboard.writeText(password).then(() => {
+            // 复制成功后关闭模态框
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+            
+            // 打开新窗口
+            window.open(prototypeUrl, '_blank');
+        }).catch(err => {
+            console.error('复制密码失败:', err);
+            alert('复制密码失败，请手动记住密码：' + password);
+            // 关闭模态框并打开窗口
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+            window.open(prototypeUrl, '_blank');
+        });
+    });
+    
+    // 点击模态框外部关闭
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    }, { once: true });
+    
+    // 按ESC键关闭模态框
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.style.display === 'block') {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    }, { once: true });
+}
+
+// 打开原型预览 - 项目2
+function openPrototypePreviewProject2() {
+    // 创建模态框（如果不存在）
+    createPasswordModal();
+    
+    const modal = document.getElementById('password-modal');
+    const copyBtn = document.getElementById('copy-password-btn');
+    const password = 'P7bh';
+    const prototypeUrl = 'https://lanhuapp.com/link/#/invite?sid=qX0ziTt2';
+    
+    // 更新模态框中的密码显示
+    updateModalPassword(password);
+    
+    // 保存当前模态框实例
+    currentModal = modal;
+    
+    // 显示模态框
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    
+    // 移除所有现有的点击监听器
+    copyBtn.replaceWith(copyBtn.cloneNode(true));
+    
+    // 获取新的复制按钮
+    const newCopyBtn = document.getElementById('copy-password-btn');
+    
+    // 添加新的点击监听器
+    newCopyBtn.addEventListener('click', function() {
+        // 复制密码到剪贴板
+        navigator.clipboard.writeText(password).then(() => {
+            // 复制成功后关闭模态框
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+            
+            // 打开新窗口
+            window.open(prototypeUrl, '_blank');
+        }).catch(err => {
+            console.error('复制密码失败:', err);
+            alert('复制密码失败，请手动记住密码：' + password);
+            // 关闭模态框并打开窗口
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+            window.open(prototypeUrl, '_blank');
+        });
+    });
+    
+    // 点击模态框外部关闭
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    }, { once: true });
+    
+    // 按ESC键关闭模态框
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.style.display === 'block') {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    }, { once: true });
+}
+
+// 更新模态框中的密码显示
+function updateModalPassword(password) {
+    // 获取密码字符框元素
+    const passwordContainers = document.querySelectorAll('#password-modal div[style*="width: 60px; height: 60px;"]');
+    
+    // 清空所有现有字符
+    passwordContainers.forEach(container => {
+        container.textContent = '';
+    });
+    
+    // 将新密码分配到各个字符框
+    const passwordChars = password.split('');
+    passwordChars.forEach((char, index) => {
+        if (passwordContainers[index]) {
+            passwordContainers[index].textContent = char;
+        }
+    });
+}
+
+// 打开原型预览 - 项目4
+function openPrototypePreviewProject4() {
+    // 创建密码模态框（如果不存在）
+    createPasswordModal();
+    
+    const modal = document.getElementById('password-modal');
+    const copyBtn = document.getElementById('copy-password-btn');
+    const password = 'S9GK';
+    const prototypeUrl = 'https://lanhuapp.com/link/#/invite?sid=qxvOcXwa';
+    
+    // 更新模态框中的密码显示
+    updateModalPassword(password);
+    
+    // 保存当前模态框实例
+    currentModal = modal;
+    
+    // 显示模态框
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    
+    // 移除所有现有的点击监听器
+    copyBtn.replaceWith(copyBtn.cloneNode(true));
+    
+    // 获取新的复制按钮
+    const newCopyBtn = document.getElementById('copy-password-btn');
+    
+    // 添加新的点击监听器
+    newCopyBtn.addEventListener('click', function() {
+        // 复制密码到剪贴板
+        navigator.clipboard.writeText(password).then(() => {
+            // 复制成功后关闭模态框
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+            
+            // 打开新窗口
+            window.open(prototypeUrl, '_blank');
+        }).catch(err => {
+            console.error('复制密码失败:', err);
+            alert('复制密码失败，请手动记住密码：' + password);
+            // 关闭模态框并打开窗口
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+            window.open(prototypeUrl, '_blank');
+        });
+    });
+    
+    // 点击模态框外部关闭
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    }, { once: true });
+    
+    // 按ESC键关闭模态框
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.style.display === 'block') {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    }, { once: true });
+}
+
+// 打开原型预览 - 项目3
+function openPrototypePreviewProject3() {
+    // 创建密码模态框（如果不存在）
+    createPasswordModal();
+    
+    const modal = document.getElementById('password-modal');
+    const copyBtn = document.getElementById('copy-password-btn');
+    const password = 'Y3z1';
+    const prototypeUrl = 'https://lanhuapp.com/link/#/invite?sid=qx0aNE8e';
+    
+    // 更新模态框中的密码显示
+    updateModalPassword(password);
+    
+    // 保存当前模态框实例
+    currentModal = modal;
+    
+    // 显示模态框
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    
+    // 移除所有现有的点击监听器
+    copyBtn.replaceWith(copyBtn.cloneNode(true));
+    
+    // 获取新的复制按钮
+    const newCopyBtn = document.getElementById('copy-password-btn');
+    
+    // 添加新的点击监听器
+    newCopyBtn.addEventListener('click', function() {
+        // 复制密码到剪贴板
+        navigator.clipboard.writeText(password).then(() => {
+            // 复制成功后关闭模态框
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+            
+            // 打开新窗口
+            window.open(prototypeUrl, '_blank');
+        }).catch(err => {
+            console.error('复制密码失败:', err);
+            alert('复制密码失败，请手动记住密码：' + password);
+            // 关闭模态框并打开窗口
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+            window.open(prototypeUrl, '_blank');
+        });
+    });
+    
+    // 点击模态框外部关闭
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    }, { once: true });
+    
+    // 按ESC键关闭模态框
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.style.display === 'block') {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    }, { once: true });
+}
+
 // DOM 加载完成后的初始化
 document.addEventListener('DOMContentLoaded', function() {
+    // 初始化密码模态框
+    createPasswordModal();
     // 移除了重复的事件监听器，避免与HTML中的onclick属性冲突
     // 保留其他初始化代码
     
