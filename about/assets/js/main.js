@@ -557,3 +557,15 @@ function smoothScroll(targetId) {
         targetElement.scrollIntoView({ behavior: 'smooth' });
     }
 }
+
+// 简历下载功能
+function downloadResume() {
+    // 使用相对路径指向实际的简历文件
+    const resumeUrl = 'assets/孙树瑞-简历.pdf';
+    const link = document.createElement('a');
+    link.href = resumeUrl;
+    link.download = '孙树瑞-简历.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}

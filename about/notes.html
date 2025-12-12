@@ -9,6 +9,26 @@
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/14.0.0/marked.min.js"></script> -->
     <script src="assets/js/marked.min.js"></script>
     
+    <!-- 添加样式修改函数 -->
+    <script>
+        // 修改所有strong和em标签的样式
+        function updateMarkdownStyles() {
+            // 修改加粗文本样式
+            const strongElements = document.querySelectorAll('#notes-content strong');
+            strongElements.forEach(element => {
+                element.style.color = '#d6574f';
+                element.style.fontWeight = 'bold';
+            });
+            
+            // 修改斜体文本样式
+            const emElements = document.querySelectorAll('#notes-content em');
+            emElements.forEach(element => {
+                element.style.color = '#3b82f6';
+                element.style.fontStyle = 'italic';
+            });
+        }
+    </script>
+    
     <!-- 网站图标 -->
     <link rel="icon" type="image/svg+xml" href="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511231053182.png">
     <link rel="shortcut icon" href="https://picgo-1331030951.cos.ap-shanghai.myqcloud.com/picgo/202511231053182.png">
@@ -40,6 +60,21 @@
         }
         th {
             background-color: #f2f2f2;
+        }
+        
+        /* Markdown文本样式 */
+        .content strong, .content em,
+        #notes-content strong, #notes-content em,
+        body strong, body em {
+            /* color: #d6574f !important; */
+            font-weight: bold !important;
+        }
+        
+        .content em, .content em,
+        #notes-content em, #notes-content em,
+        body em, body em {
+            color: #3b82f6 !important;
+            font-style: italic !important;
         }
 
 
@@ -1260,7 +1295,7 @@
                     throw new Error(`从API获取文件失败: ${apiResponse.status}`);
                 }
                 
-                // 3. 使用marked.js库处理Markdown
+                // 3. 使用marked.js库处理Markdown，使用全局配置的渲染器
                 let html = marked.parse(content);
                 
                 // 4. 添加中文标题和横线
@@ -1271,6 +1306,9 @@
                 
                 // 6. 生成内容目录
                 generateContentTOC();
+                
+                // 7. 更新Markdown样式
+                updateMarkdownStyles();
             } catch (error) {
                 console.error('Failed to load markdown file:', error);
                 document.getElementById('notes-content').innerHTML = `
@@ -1282,7 +1320,7 @@
 
         // 渲染Markdown内容
         function renderMarkdown(markdownText) {
-            // 使用marked.js库处理Markdown
+            // 使用全局配置的marked渲染器处理Markdown
             let html = marked.parse(markdownText);
             
             // 更新正文内容
@@ -1290,6 +1328,9 @@
             
             // 生成内容目录
             generateContentTOC();
+            
+            // 更新Markdown样式
+            updateMarkdownStyles();
         }
         
         // 生成内容目录

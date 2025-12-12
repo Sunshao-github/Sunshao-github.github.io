@@ -918,7 +918,7 @@
                     </div>
                     
                     <!-- 底部按钮 -->
-                    <button class="open-original-btn">Open Original</button>
+                    <button class="open-original-btn" disabled>Open Original</button>
                 </div>
             </div>
         </div>
@@ -1537,13 +1537,14 @@
             document.body.style.overflow = '';
         }
         
-        // 为打开原图按钮添加事件监听器
+        // 为打开原图按钮添加事件监听器（暂时禁用跳转功能）
         document.addEventListener('DOMContentLoaded', function() {
             const openBtn = document.querySelector('.open-original-btn');
             if (openBtn) {
-                openBtn.addEventListener('click', function() {
-                    const currentImage = document.getElementById('image-detail').src;
-                    window.open(currentImage, '_blank');
+                openBtn.addEventListener('click', function(e) {
+                    // 暂时禁用跳转功能，按钮已设置disabled属性
+                    e.preventDefault();
+                    return false;
                 });
             }
         });

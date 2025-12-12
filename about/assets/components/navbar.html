@@ -27,6 +27,18 @@
                             </div>
                         </a>
                     </li>
+                    <li class="resume-icon-wrapper">
+                        <a href="#" class="resume-icon" title="下载简历" onclick="downloadResume(); return false;">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" version="1.1" width="24" height="24" fill="currentColor">
+                                <path d="M102.4 179.2a76.8 76.8 0 0 1 76.8-76.8h537.6l204.8 204.8v537.6a76.8 76.8 0 0 1-76.8 76.8H179.2a76.8 76.8 0 0 1-76.8-76.8V179.2z" fill="currentColor" p-id="6639"></path>
+                                <path d="M102.4 512h819.2v332.8a76.8 76.8 0 0 1-76.8 76.8H179.2a76.8 76.8 0 0 1-76.8-76.8V512z" fill="#FFFFFF" fill-opacity=".35" p-id="6640" data-spm-anchor-id="a313x.search_index.0.i0.271a3a8108Sjs8" class=""></path>
+                                <path d="M550.4 627.2h268.8v51.2H550.4v-51.2z" fill="#FFFFFF" p-id="6641"></path>
+                                <path d="M435.2 755.2h384v51.2H435.2v-51.2z" fill="#FFFFFF" p-id="6642"></path>
+                                <path d="M384 236.8c0 31.808-28.6592 57.6-64 57.6s-64-25.792-64-57.6 28.6592-57.6 64-57.6 64 25.792 64 57.6zM194.7776 365.1072A57.6 57.6 0 0 1 251.008 320h137.984a57.6 57.6 0 0 1 56.2304 45.1072C453.2224 401.0752 425.856 435.2 388.992 435.2H251.008c-36.864 0-64.2304-34.1248-56.2304-70.0928z" fill="#FFFFFF" p-id="6643"></path>
+                                <path d="M716.8 307.2h204.8L716.8 102.4v204.8z" fill="#FFFFFF" p-id="6644"></path>
+                            </svg>
+                        </a>
+                    </li>
             </ul>
         </div>
         <div class="navbar-toggle">
@@ -193,6 +205,45 @@
         transition: none !important;
     }
     
+    /* 简历下载图标样式 */
+    .resume-icon-wrapper {
+        position: relative;
+    }
+    
+    .resume-icon-wrapper .resume-icon {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        padding: 8px !important;
+        border-radius: 50% !important;
+        background: rgba(255, 255, 255, 0.9);
+        text-decoration: none !important;
+        border: none !important;
+        transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease !important;
+        z-index: 2;
+    }
+    
+    .resume-icon-wrapper .resume-icon:hover {
+        background: rgba(255, 255, 255, 0.95);
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* 确保不显示下划线 */
+    .resume-icon-wrapper .resume-icon::after {
+        display: none !important;
+        content: none !important;
+    }
+    
+    /* 防止点击时的视觉反馈 */
+    .resume-icon-wrapper .resume-icon:active {
+        transform: none !important;
+        transition: none !important;
+    }
+    
     /* 二维码样式 */
     .wechat-qrcode {
         position: absolute;
@@ -266,5 +317,17 @@
             document.body.removeChild(textArea);
             alert('邮箱地址已复制到剪贴板: ' + email);
         });
+    }
+    
+    /* 简历下载函数 */
+    function downloadResume() {
+        // 使用相对路径指向实际的简历文件
+        const resumeUrl = '../孙树瑞-简历.pdf';
+        const link = document.createElement('a');
+        link.href = resumeUrl;
+        link.download = '孙树瑞-简历.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 </script>
